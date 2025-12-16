@@ -115,5 +115,7 @@ const App: React.FC = () => {
     </HashRouter>
   );
 };
+console.log("App mounted");
+
 
 export default App;
