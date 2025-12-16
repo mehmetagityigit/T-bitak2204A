@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { UserProfile, INITIAL_PROFILE, CustomBloodValue } from '../types';
-import { Droplet, Save, AlertCircle, Plus, Trash2, Beaker } from 'lucide-react';
+import { Droplet, Save, AlertCircle, Plus, Trash2, Beaker, Camera, Upload, Loader2, ScanLine } from 'lucide-react';
+import { analyzeBloodResult } from '../services/geminiService';
 
 interface Props {
   profile: UserProfile;
@@ -29,6 +30,8 @@ export const BloodValuesPage: React.FC<Props> = ({ profile, onUpdate }) => {
 
   const [newCustom, setNewCustom] = useState({ name: '', value: '', unit: 'mg/dL' });
   const [isSaved, setIsSaved] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle Standard Fields
   const handleChange = (key: string, value: string) => {
@@ -36,6 +39,53 @@ export const BloodValuesPage: React.FC<Props> = ({ profile, onUpdate }) => {
       ...prev,
       [key]: Number(value)
     }));
+  };
+
+  // Handle Image Upload & AI Analysis
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsAnalyzing(true);
+
+    try {
+      // Convert to Base64
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        // Remove data URL prefix (e.g., "data:image/jpeg;base64,")
+        const base64Data = base64String.split(',')[1];
+        const mimeType = file.type;
+
+        try {
+          const extractedData = await analyzeBloodResult(base64Data, mimeType);
+          
+          if (Object.keys(extractedData).length === 0) {
+            alert("Görselden anlamlı veri okunamadı. Lütfen fotoğrafın net olduğundan emin olun.");
+          } else {
+            // Update state with found values
+            setBloodValues(prev => ({
+              ...prev,
+              ...extractedData
+            }));
+            alert(`Başarıyla okunan değerler: ${Object.keys(extractedData).join(', ')}`);
+          }
+        } catch (error) {
+          console.error("AI Analysis Error:", error);
+          alert("Analiz sırasında bir hata oluştu. Lütfen internet bağlantınızı kontrol edin.");
+        } finally {
+          setIsAnalyzing(false);
+        }
+      };
+    } catch (e) {
+      console.error("File reading error", e);
+      setIsAnalyzing(false);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
   };
 
   // Handle Custom Fields Adding
@@ -83,17 +133,47 @@ export const BloodValuesPage: React.FC<Props> = ({ profile, onUpdate }) => {
           <Droplet className="text-red-500" /> Tahlil Sonuçları
         </h1>
         <p className="text-gray-500 mt-1">
-          Son yaptırdığınız kan testi sonuçlarını buraya girin. Yapay zeka bu değerleri kullanarak size daha iyi öneriler sunar.
+          Son yaptırdığınız kan testi sonuçlarını manuel girebilir veya fotoğrafını yükleyerek yapay zekaya okutabilirsiniz.
         </p>
       </header>
 
-      {/* Info Card */}
-      <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-3 text-sm text-blue-700">
-        <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
-        <p>
-          Değerlerinizi e-Nabız veya tahlil kağıdınızdan kontrol ederek giriniz. 
-          Eksik veya yanlış veri, bağışıklık skoru hesaplamasını etkileyebilir.
-        </p>
+      {/* AI Scan Section */}
+      <div className="bg-gradient-to-r from-teal-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-bold flex items-center gap-2">
+              <ScanLine /> Akıllı Tahlil Okuyucu
+            </h3>
+            <p className="text-teal-50 text-sm mt-1">
+              Tahlil kağıdının fotoğrafını çekin, değerleri otomatik dolduralım.
+            </p>
+          </div>
+          
+          <button 
+            onClick={triggerFileInput}
+            disabled={isAnalyzing}
+            className="bg-white text-teal-700 px-6 py-3 rounded-xl font-bold shadow-md hover:bg-teal-50 transition active:scale-95 flex items-center gap-2 whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="animate-spin" size={20} /> Analiz Ediliyor...
+              </>
+            ) : (
+              <>
+                <Camera size={20} /> Fotoğraf Yükle
+              </>
+            )}
+          </button>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileUpload} 
+            accept="image/*" 
+            className="hidden" 
+          />
+        </div>
+        {/* Decor */}
+        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
       </div>
 
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
@@ -115,7 +195,7 @@ export const BloodValuesPage: React.FC<Props> = ({ profile, onUpdate }) => {
                 type="number" 
                 value={bloodValues.hemoglobin} 
                 onChange={(e) => handleChange('hemoglobin', e.target.value)}
-                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800"
+                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800 transition-colors"
               />
               <div className="absolute right-3 top-3 text-gray-400 text-sm">g/dL</div>
             </div>

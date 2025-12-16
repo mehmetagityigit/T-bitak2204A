@@ -29,6 +29,22 @@ export interface SymptomLog {
   notes?: string;
 }
 
+// --- NEW DIET INTERFACES ---
+export interface Meal {
+  id: string;
+  name: string;
+  calories: number;
+  type: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+}
+
+export interface DailyExercise {
+  id: string;
+  name: string;
+  durationMinutes: number;
+  caloriesBurned: number;
+}
+// ---------------------------
+
 export interface DailyLog {
   date: string;
   stressLevel: number; // 1-10
@@ -39,6 +55,12 @@ export interface DailyLog {
   waterIntake: number; // Liters
   immunityScore: number; // Calculated
   dailyAdvice?: string; // Auto-generated detailed feedback
+  
+  // New Fields for Diet Tracking
+  meals?: Meal[];
+  exercises?: DailyExercise[];
+  totalCaloriesIn?: number;
+  totalCaloriesOut?: number; // Exercise + BMR (Active Energy)
 }
 
 export interface BodyMeasurements {

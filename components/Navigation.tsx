@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Activity, MessageSquare, User, ClipboardList, Droplet, Dumbbell } from 'lucide-react';
+import { Activity, MessageSquare, User, ClipboardList, Droplet, Dumbbell, UtensilsCrossed } from 'lucide-react';
 
 export const Navigation: React.FC = () => {
   const navClass = ({ isActive }: { isActive: boolean }) =>
@@ -18,30 +18,34 @@ export const Navigation: React.FC = () => {
             SağlıkAsist
           </div>
 
-          <div className="flex w-full h-full md:w-auto md:gap-6">
+          <div className="flex w-full h-full md:w-auto md:gap-4 lg:gap-6 justify-between md:justify-start">
             <NavLink to="/" className={navClass}>
               <Activity className="w-5 h-5 md:w-6 md:h-6" />
-              <span className="text-[10px] md:text-sm">Durum</span>
+              <span className="text-[9px] md:text-sm">Durum</span>
+            </NavLink>
+            <NavLink to="/diet" className={navClass}>
+              <UtensilsCrossed className="w-5 h-5 md:w-6 md:h-6" />
+              <span className="text-[9px] md:text-sm">Diyet</span>
             </NavLink>
              <NavLink to="/blood-values" className={navClass}>
               <Droplet className="w-5 h-5 md:w-6 md:h-6" />
-              <span className="text-[10px] md:text-sm">Tahliller</span>
+              <span className="text-[9px] md:text-sm">Tahlil</span>
             </NavLink>
             <NavLink to="/fitness" className={navClass}>
               <Dumbbell className="w-5 h-5 md:w-6 md:h-6" />
-              <span className="text-[10px] md:text-sm">Fitness</span>
+              <span className="text-[9px] md:text-sm">Fitness</span>
             </NavLink>
             <NavLink to="/entry" className={navClass}>
               <ClipboardList className="w-5 h-5 md:w-6 md:h-6" />
-              <span className="text-[10px] md:text-sm">Giriş</span>
+              <span className="text-[9px] md:text-sm">Giriş</span>
             </NavLink>
             <NavLink to="/chat" className={navClass}>
               <MessageSquare className="w-5 h-5 md:w-6 md:h-6" />
-              <span className="text-[10px] md:text-sm">Asistan</span>
+              <span className="text-[9px] md:text-sm">Asistan</span>
             </NavLink>
             <NavLink to="/profile" className={navClass}>
               <User className="w-5 h-5 md:w-6 md:h-6" />
-              <span className="text-[10px] md:text-sm">Profil</span>
+              <span className="text-[9px] md:text-sm">Profil</span>
             </NavLink>
           </div>
         </div>

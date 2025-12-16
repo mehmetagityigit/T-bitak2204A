@@ -9,8 +9,26 @@ export const getBMICategory = (bmi: number): string => {
 };
 
 /**
- * Calculates Body Fat Percentage using U.S. Navy Method
+ * Calculates Basal Metabolic Rate (BMR) using Mifflin-St Jeor Equation
  */
+export const calculateBMR = (
+  weight: number,
+  height: number,
+  age: number,
+  gender: 'male' | 'female' | 'other'
+): number => {
+  // Men: 10W + 6.25H - 5A + 5
+  // Women: 10W + 6.25H - 5A - 161
+  let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+  
+  if (gender === 'male') {
+    bmr += 5;
+  } else {
+    bmr -= 161;
+  }
+  return Math.round(bmr);
+};
+
 export const calculateBodyFat = (
   gender: 'male' | 'female' | 'other',
   waist: number,
@@ -18,23 +36,14 @@ export const calculateBodyFat = (
   height: number,
   hip: number = 0
 ): number => {
-  // Constants for calculation
   if (waist === 0 || neck === 0 || height === 0) return 0;
-  
-  // Formulas require LOG10.
-  // Values must be in cm.
   
   if (gender === 'female') {
     if (hip === 0) return 0;
-    // Female Formula: 163.205 * log10(waist + hip - neck) - 97.684 * log10(height) - 78.387
     const result = 163.205 * Math.log10(waist + hip - neck) - 97.684 * Math.log10(height) - 78.387;
     return Number(result.toFixed(1));
   } else {
-    // Male Formula: 86.010 * log10(abdomen - neck) - 70.041 * log10(height) + 36.76
-    // Note: 'waist' is used as abdomen here
-    // Ensure argument for log is positive
     if (waist - neck <= 0) return 0;
-    
     const result = 86.010 * Math.log10(waist - neck) - 70.041 * Math.log10(height) + 36.76;
     return Number(result.toFixed(1));
   }
@@ -56,11 +65,7 @@ export const getBodyFatCategory = (bf: number, gender: string): string => {
   }
 };
 
-/**
- * Calculates estimated calories burned based on MET values
- */
 export const calculateCaloriesBurned = (activityMet: number, weightKg: number, durationMinutes: number): number => {
-  // Formula: Calories = MET * Weight(kg) * Time(hours)
   const durationHours = durationMinutes / 60;
   return Math.round(activityMet * weightKg * durationHours);
 };
@@ -100,10 +105,6 @@ export const getImmunityDescription = (score: number): { title: string, desc: st
   }
 };
 
-/**
- * Generates a daily feedback message based on the log data.
- * Used for immediate feedback in the DailyEntry component.
- */
 export const generateDailyFeedback = (log: DailyLog, profile: UserProfile): string => {
   const generalAdvice = [];
   const nutritionAdvice = [];
@@ -153,14 +154,8 @@ export const generateDailyFeedback = (log: DailyLog, profile: UserProfile): stri
   `.trim();
 };
 
-/**
- * Sends the user query and profile to a Python API via HTTP POST.
- * Returns the text response from the Python backend.
- */
 export const processOfflineQuery = async (query: string, profile: UserProfile): Promise<string> => {
   try {
-    // Preparing the payload
-    // We send the whole profile so Python has context about BMI, Blood Values, and Logs.
     const payload = {
       query: query,
       profile: profile,
@@ -180,8 +175,6 @@ export const processOfflineQuery = async (query: string, profile: UserProfile): 
     }
 
     const data = await response.json();
-    
-    // Expecting JSON format: { "response": "Your answer here" }
     return data.response || "Python API boş bir cevap döndürdü.";
 
   } catch (error) {

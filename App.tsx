@@ -10,6 +10,7 @@ import { AIChat } from './components/AIChat';
 import { ProfileConfig } from './components/ProfileConfig';
 import { BloodValuesPage } from './components/BloodValuesPage';
 import { FitnessPage } from './components/FitnessPage';
+import { DietPage } from './components/DietPage'; // NEW IMPORT
 import { Navigation } from './components/Navigation';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
@@ -98,6 +99,7 @@ const App: React.FC = () => {
                     <Route path="/" element={<Dashboard profile={profile} />} />
                     <Route path="/blood-values" element={<BloodValuesPage profile={profile} onUpdate={handleUpdateProfile} />} />
                     <Route path="/fitness" element={<FitnessPage profile={profile} onUpdate={handleUpdateProfile} />} />
+                    <Route path="/diet" element={<DietPage profile={profile} onUpdate={handleAddLog} />} />
                     <Route path="/entry" element={<DailyEntry onSave={handleAddLog} profile={profile} />} />
                     <Route path="/chat" element={<AIChat profile={profile} onUpdateProfile={handleUpdateProfile} />} />
                     <Route path="/profile" element={<ProfileConfig profile={profile} onUpdate={handleUpdateProfile} />} />

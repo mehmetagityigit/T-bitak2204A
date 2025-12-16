@@ -1,4 +1,4 @@
-import { GoogleGenAI, Chat, FunctionDeclaration, Type } from "@google/genai";
+import { GoogleGenAI, Chat, FunctionDeclaration, Type, GenerateContentResponse } from "@google/genai";
 import { UserProfile } from "../types";
 import { getBMICategory } from "./ruleEngine";
 import { GEMINI_API_KEY } from "./config";
@@ -135,4 +135,61 @@ export const createGeminiChat = (profile: UserProfile): Chat => {
       tools: [{ functionDeclarations: [logSymptomTool] }],
     },
   });
+};
+
+/**
+ * Analyzes a blood test result image and extracts values.
+ * @param base64Image The base64 string of the image (without data:image/... prefix)
+ * @param mimeType The mime type of the image (e.g., image/jpeg)
+ */
+export const analyzeBloodResult = async (base64Image: string, mimeType: string) => {
+  if (!GEMINI_API_KEY) throw new Error("API Key Missing");
+
+  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  
+  const prompt = `
+  Analyze this medical blood test report image. Extract the following values if they exist.
+  Return ONLY a JSON object. Do not include markdown formatting (like \`\`\`json).
+  
+  Keys to extract:
+  - hemoglobin (number)
+  - ferritin (number)
+  - iron (number)
+  - b12 (number)
+  - d3 (number)
+  - magnesium (number)
+  - glucose (number)
+  - tsh (number)
+  - wbc (number)
+
+  If a value is not found in the image, do not include the key in the JSON.
+  Look for synonyms like "Demir" for iron, "Açlık Kan Şekeri" for glucose, "Lökosit" for WBC.
+  Only return the numeric value, strip units.
+  `;
+
+  const response: GenerateContentResponse = await ai.models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents: {
+      parts: [
+        {
+          inlineData: {
+            mimeType: mimeType,
+            data: base64Image
+          }
+        },
+        { text: prompt }
+      ]
+    }
+  });
+
+  const text = response.text || "{}";
+  // Clean up markdown if model adds it despite instructions
+  const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+  
+  try {
+    return JSON.parse(cleanJson);
+  } catch (e) {
+    console.error("Failed to parse Gemini JSON response", text);
+    return {};
+  }
 };
