@@ -4,48 +4,40 @@ import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserProfile, INITIAL_PROFILE } from '../types';
-import { Activity } from 'lucide-react';
+import { Activity, User, Mail, Lock, Ruler, Weight, ArrowRight } from 'lucide-react';
 
 export const Register: React.FC = () => {
+  const [step, setStep] = useState(1); // Multi-step form for better UX
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // Initialize form with default profile structure
   const [profileData, setProfileData] = useState<UserProfile>(INITIAL_PROFILE);
-  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (step === 1) { setStep(2); return; } // Go to next step
+
     setLoading(true);
     setError('');
 
     try {
-      // Calculate BMI before saving
-      // BMI = kg / (m * m)
       const heightInMeters = profileData.height / 100;
       const calculatedBMI = profileData.weight / (heightInMeters * heightInMeters);
 
-      // 1. Create User in Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2. Save Profile in Firestore
-      // We use the Auth UID as the document ID for easy retrieval
       await setDoc(doc(db, "users", user.uid), {
         ...profileData,
-        bmi: Number(calculatedBMI.toFixed(2)), // Save BMI
+        bmi: Number(calculatedBMI.toFixed(2)),
       });
 
       navigate('/');
     } catch (err: any) {
-      console.error(err);
-      if (err.code === 'auth/email-already-in-use') {
-        setError('Bu e-posta adresi zaten kullanımda.');
-      } else {
-        setError('Kayıt sırasında bir hata oluştu: ' + err.message);
-      }
+      if (err.code === 'auth/email-already-in-use') setError('Bu e-posta zaten kayıtlı.');
+      else setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -56,79 +48,110 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 flex items-center justify-center">
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+    <div className="min-h-screen flex bg-white">
+      {/* LEFT SIDE - BRANDING */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gray-900 relative overflow-hidden items-center justify-center text-white p-12">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-teal-900 opacity-90"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/20 rounded-full blur-3xl"></div>
         
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 text-teal-700 flex items-center justify-center gap-2">
-            <Activity /> SağlıkAsist Kayıt
-          </h1>
-          <p className="text-gray-500 mt-2">Bağışıklık skorunuzu hesaplamak için lütfen formu doldurun.</p>
+        <div className="relative z-10 max-w-lg">
+           <h1 className="text-5xl font-bold mb-6">Aramıza <br/><span className="text-teal-400">Katılın.</span></h1>
+           <p className="text-gray-300 text-lg">SağlıkAsist ile vücudunuzun sinyallerini dinleyin. Yapay zeka destekli analizlerle daha sağlıklı bir geleceğe adım atın.</p>
+           
+           <div className="mt-12 grid grid-cols-2 gap-6">
+              <div className="bg-white/5 backdrop-blur border border-white/10 p-4 rounded-xl">
+                 <div className="text-teal-400 font-bold text-xl mb-1">%100</div>
+                 <div className="text-sm text-gray-400">Gizlilik Odaklı</div>
+              </div>
+              <div className="bg-white/5 backdrop-blur border border-white/10 p-4 rounded-xl">
+                 <div className="text-teal-400 font-bold text-xl mb-1">7/24</div>
+                 <div className="text-sm text-gray-400">AI Asistan</div>
+              </div>
+           </div>
         </div>
+      </div>
 
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-6 text-center">{error}</div>}
+      {/* RIGHT SIDE - FORM */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
+        <div className="max-w-md w-full">
+           <div className="mb-8">
+              <div className="flex items-center gap-2 mb-2">
+                 <div className={`h-2 flex-1 rounded-full ${step >= 1 ? 'bg-teal-600' : 'bg-gray-200'}`}></div>
+                 <div className={`h-2 flex-1 rounded-full ${step >= 2 ? 'bg-teal-600' : 'bg-gray-200'}`}></div>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">{step === 1 ? 'Hesap Oluştur' : 'Vücut Profiliniz'}</h2>
+              <p className="text-gray-500 text-sm">{step === 1 ? 'Giriş bilgilerinizi belirleyin.' : 'Doğru analiz için bu bilgiler gerekli.'}</p>
+           </div>
 
-        <form onSubmit={handleRegister} className="space-y-8">
-          
-          {/* Section 1: Account Info */}
-          <div>
-            <h3 className="font-bold text-gray-800 border-b pb-2 mb-4">Hesap Bilgileri</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">E-posta</label>
-                <input type="email" required className="w-full p-2 border rounded-lg mt-1" value={email} onChange={e => setEmail(e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Şifre</label>
-                <input type="password" required className="w-full p-2 border rounded-lg mt-1" value={password} onChange={e => setPassword(e.target.value)} />
-              </div>
-            </div>
-          </div>
+           {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-6 text-sm border border-red-100">{error}</div>}
 
-          {/* Section 2: Personal Info */}
-          <div>
-            <h3 className="font-bold text-gray-800 border-b pb-2 mb-4">Kişisel Bilgiler</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Ad Soyad</label>
-                <input type="text" required className="w-full p-2 border rounded-lg mt-1" value={profileData.name} onChange={e => updateProfile('name', e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Yaş</label>
-                <input type="number" required className="w-full p-2 border rounded-lg mt-1" value={profileData.age} onChange={e => updateProfile('age', Number(e.target.value))} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Cinsiyet</label>
-                <select className="w-full p-2 border rounded-lg mt-1" value={profileData.gender} onChange={e => updateProfile('gender', e.target.value)}>
-                  <option value="male">Erkek</option>
-                  <option value="female">Kadın</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Kilo (kg)</label>
-                <input type="number" required className="w-full p-2 border rounded-lg mt-1" value={profileData.weight} onChange={e => updateProfile('weight', Number(e.target.value))} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Boy (cm)</label>
-                <input type="number" required className="w-full p-2 border rounded-lg mt-1" value={profileData.height} onChange={e => updateProfile('height', Number(e.target.value))} />
-              </div>
-            </div>
-            <div className="mt-2 text-xs text-gray-500 bg-teal-50 p-2 rounded">
-              * Boy ve kilo bilgileriniz, Vücut Kitle İndeksi (VKİ) hesaplanarak yapay zeka önerilerinde kullanılacaktır.
-            </div>
-          </div>
+           <form onSubmit={handleRegister} className="space-y-4">
+              {step === 1 && (
+                 <div className="space-y-4 animate-in slide-in-from-right">
+                    <div>
+                       <label className="text-sm font-medium text-gray-700">Ad Soyad</label>
+                       <div className="relative mt-1">
+                          <User className="absolute left-3 top-3 text-gray-400" size={18}/>
+                          <input type="text" required value={profileData.name} onChange={e => updateProfile('name', e.target.value)} className="w-full pl-10 p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-teal-500" placeholder="Adınız"/>
+                       </div>
+                    </div>
+                    <div>
+                       <label className="text-sm font-medium text-gray-700">E-posta</label>
+                       <div className="relative mt-1">
+                          <Mail className="absolute left-3 top-3 text-gray-400" size={18}/>
+                          <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full pl-10 p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-teal-500" placeholder="ornek@email.com"/>
+                       </div>
+                    </div>
+                    <div>
+                       <label className="text-sm font-medium text-gray-700">Şifre</label>
+                       <div className="relative mt-1">
+                          <Lock className="absolute left-3 top-3 text-gray-400" size={18}/>
+                          <input type="password" required value={password} onChange={e => setPassword(e.target.value)} className="w-full pl-10 p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-teal-500" placeholder="••••••••"/>
+                       </div>
+                    </div>
+                 </div>
+              )}
 
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform active:scale-95 disabled:opacity-50"
-          >
-            {loading ? "Hesap Oluşturuluyor..." : "Kaydı Tamamla"}
-          </button>
-        </form>
+              {step === 2 && (
+                 <div className="space-y-4 animate-in slide-in-from-right">
+                    <div className="grid grid-cols-2 gap-4">
+                       <div>
+                          <label className="text-sm font-medium text-gray-700">Yaş</label>
+                          <input type="number" required value={profileData.age} onChange={e => updateProfile('age', Number(e.target.value))} className="w-full p-3 bg-gray-50 border rounded-xl mt-1 outline-none focus:ring-2 focus:ring-teal-500"/>
+                       </div>
+                       <div>
+                          <label className="text-sm font-medium text-gray-700">Cinsiyet</label>
+                          <select value={profileData.gender} onChange={e => updateProfile('gender', e.target.value)} className="w-full p-3 bg-gray-50 border rounded-xl mt-1 outline-none focus:ring-2 focus:ring-teal-500">
+                             <option value="male">Erkek</option>
+                             <option value="female">Kadın</option>
+                          </select>
+                       </div>
+                    </div>
+                    <div>
+                       <label className="text-sm font-medium text-gray-700">Boy (cm)</label>
+                       <div className="relative mt-1">
+                          <Ruler className="absolute left-3 top-3 text-gray-400" size={18}/>
+                          <input type="number" required value={profileData.height} onChange={e => updateProfile('height', Number(e.target.value))} className="w-full pl-10 p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-teal-500" placeholder="175"/>
+                       </div>
+                    </div>
+                    <div>
+                       <label className="text-sm font-medium text-gray-700">Kilo (kg)</label>
+                       <div className="relative mt-1">
+                          <Weight className="absolute left-3 top-3 text-gray-400" size={18}/>
+                          <input type="number" required value={profileData.weight} onChange={e => updateProfile('weight', Number(e.target.value))} className="w-full pl-10 p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-teal-500" placeholder="70"/>
+                       </div>
+                    </div>
+                 </div>
+              )}
 
-        <div className="text-center mt-6 text-sm text-gray-500">
-          Zaten hesabınız var mı? <Link to="/login" className="text-teal-600 font-bold hover:underline">Giriş Yap</Link>
+              <button type="submit" disabled={loading} className="w-full mt-4 bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                 {loading ? "İşleniyor..." : (step === 1 ? <>Devam Et <ArrowRight size={18}/></> : "Kaydı Tamamla")}
+              </button>
+           </form>
+
+           <div className="text-center mt-6">
+              <p className="text-gray-600 text-sm">Zaten hesabınız var mı? <Link to="/login" className="text-teal-600 font-bold hover:underline">Giriş Yap</Link></p>
+           </div>
         </div>
       </div>
     </div>

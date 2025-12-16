@@ -10,6 +10,16 @@ interface Props {
   onUpdateProfile: (p: UserProfile) => void;
 }
 
+// Helper to parse simple markdown (Bold)
+const formatText = (text: string) => {
+  return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index} className="font-bold">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
 export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -180,12 +190,12 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
                 {msg.role === 'user' ? <User size={16}/> : <Bot size={16}/>}
               </div>
               
-              <div className={`p-3 rounded-2xl text-sm leading-relaxed shadow-sm ${
+              <div className={`p-3 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${
                 msg.role === 'user' 
                   ? 'bg-indigo-600 text-white rounded-tr-none' 
                   : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
               }`}>
-                {msg.text}
+                {formatText(msg.text)}
                 {msg.isOfflineResponse && (
                   <div className="mt-2 text-[10px] opacity-70 border-t border-gray-200 pt-1 flex items-center gap-1 text-orange-600">
                     <Server size={10} /> Python API yanıtı.

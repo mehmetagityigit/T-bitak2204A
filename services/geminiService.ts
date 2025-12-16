@@ -1,5 +1,5 @@
 import { GoogleGenAI, Chat, FunctionDeclaration, Type, GenerateContentResponse } from "@google/genai";
-import { UserProfile } from "../types";
+import { UserProfile, PerformanceLog } from "../types";
 import { getBMICategory } from "./ruleEngine";
 import { GEMINI_API_KEY } from "./config";
 
@@ -9,27 +9,25 @@ const formatHealthContext = (profile: UserProfile): string => {
   const bmiCategory = getBMICategory(profile.bmi || 22);
   
   let context = `
-  CURRENT USER HEALTH PROFILE:
-  - Name: ${profile.name}
-  - Age: ${profile.age}
-  - Gender: ${profile.gender}
-  - Body Stats: Height ${profile.height}cm, Weight ${profile.weight}kg
-  - BMI (Body Mass Index): ${profile.bmi?.toFixed(1) || 'N/A'} (${bmiCategory})
-  - Blood Values: 
-    * Iron: ${profile.bloodValues.iron}
-    * Ferritin: ${profile.bloodValues.ferritin || 'N/A'}
-    * B12: ${profile.bloodValues.b12}
-    * D3: ${profile.bloodValues.d3}
-    * WBC: ${profile.bloodValues.wbc}
-    * Hemoglobin: ${profile.bloodValues.hemoglobin || 'N/A'}
-    * Magnesium: ${profile.bloodValues.magnesium || 'N/A'}
-    * Glucose: ${profile.bloodValues.glucose || 'N/A'}
-    * TSH: ${profile.bloodValues.tsh || 'N/A'}
+  --- KULLANICI PROFİLİ ---
+  - İsim: ${profile.name}
+  - Yaş: ${profile.age}
+  - Cinsiyet: ${profile.gender === 'male' ? 'Erkek' : 'Kadın'}
+  - Vücut: ${profile.height}cm, ${profile.weight}kg
+  - VKİ (BMI): ${profile.bmi?.toFixed(1) || 'N/A'} (${bmiCategory})
+  
+  --- KAN DEĞERLERİ RAPORU ---
+  * Demir (Iron): ${profile.bloodValues.iron} (Düşükse halsizlik yapar)
+  * Ferritin: ${profile.bloodValues.ferritin || 'Yok'}
+  * B12 Vitamini: ${profile.bloodValues.b12} (Düşükse unutkanlık yapar)
+  * D3 Vitamini: ${profile.bloodValues.d3} (Bağışıklık için kritik)
+  * Şeker (Glucose): ${profile.bloodValues.glucose || 'Yok'}
+  * WBC (Bağışıklık Hücresi): ${profile.bloodValues.wbc}
   `;
 
   // Add Custom Values if they exist
   if (profile.bloodValues.customValues && profile.bloodValues.customValues.length > 0) {
-    context += `    * OTHER TESTS:\n`;
+    context += `    * DİĞER TAHLİLLER:\n`;
     profile.bloodValues.customValues.forEach(val => {
       context += `      - ${val.name}: ${val.value} ${val.unit}\n`;
     });
@@ -37,25 +35,23 @@ const formatHealthContext = (profile: UserProfile): string => {
 
   if (lastLog) {
     context += `
-    TODAY'S STATUS (${lastLog.date}):
-    - Nutrition Score (1-10): ${lastLog.nutritionScore || 'N/A'}
-    - Stress Level (1-10): ${lastLog.stressLevel}
-    - Fatigue Level (1-10): ${lastLog.fatigueLevel}
-    - Sleep: ${lastLog.sleepHours} hours
-    - Symptoms: ${lastLog.symptoms.join(', ') || 'None'}
-    - Immunity Score: ${lastLog.immunityScore}/100
-    - Daily System Feedback: ${lastLog.dailyAdvice || 'N/A'}
+    --- BUGÜNKÜ DURUM (${lastLog.date}) ---
+    - Beslenme Puanı: ${lastLog.nutritionScore || 'Girilmedi'}/10
+    - Stres Seviyesi: ${lastLog.stressLevel}/10
+    - Yorgunluk: ${lastLog.fatigueLevel}/10
+    - Uyku: ${lastLog.sleepHours} saat
+    - Ruh Hali: ${lastLog.mood || 'Belirtilmedi'}
+    - Su Tüketimi: ${lastLog.waterIntake} Litre
+    - Semptomlar: ${lastLog.symptoms.join(', ') || 'Yok'}
     `;
   } else {
-    context += `\nNo daily log entered for today yet.`;
+    context += `\nBugün henüz veri girişi yapılmadı. Kullanıcıya nazikçe veri girmesini hatırlat.`;
   }
 
   // Add recent symptom history context
   const recentSymptoms = profile.symptomHistory.slice(-3);
   if (recentSymptoms.length > 0) {
-    context += `\nRECENT SYMPTOM MEMORY:
-    ${recentSymptoms.map(s => `- ${s.timestamp}: ${s.symptom} (Severity: ${s.severity || 'N/A'}, Duration: ${s.duration || 'N/A'})`).join('\n')}
-    `;
+    context += `\n--- SON ŞİKAYETLER ---\n${recentSymptoms.map(s => `- ${s.timestamp}: ${s.symptom}`).join('\n')}`;
   }
 
   return context;
@@ -86,42 +82,48 @@ const logSymptomTool: FunctionDeclaration = {
 };
 
 export const createGeminiChat = (profile: UserProfile): Chat => {
-  // Use the safe API Key from config
   if (!GEMINI_API_KEY) {
     console.error("API Key missing! Check environment variables.");
   }
   
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-  
   const healthContext = formatHealthContext(profile);
 
   const systemInstruction = `
-  You are "SağlıkAsist", a smart health assistant for a TÜBİTAK project.
+  Sen "SağlıkAsist"sin. TÜBİTAK projesi kapsamında geliştirilmiş, **son derece bilgili, samimi, motive edici bir Yaşam Koçu ve Sağlık Asistanısın.**
 
-  **CORE OBJECTIVE:**
-  Listen to the user, **RECORD** any symptoms they mention using the \`logSymptom\` tool, and then provide helpful **WELLNESS ADVICE**.
+  **GÖREVİN:**
+  Kullanıcıyı bir hasta gibi değil, gelişime açık bir birey olarak gör. Onun verilerini analiz et, hayat kalitesini artıracak **uzun, detaylı ve tatmin edici** tavsiyeler ver. Kısa cevaplar verme. Konuşmayı sürdür.
 
-  **RULES FOR MEDICAL SAFETY:**
-  1.  **NO DIAGNOSIS:** Never say "You have X disease". Say "This sounds like it could be X" or "These symptoms are often associated with X".
-  2.  **NO MEDICATION:** Never prescribe drugs (antibiotics, painkillers, etc.).
-  3.  **NO TREATMENT:** Do not recommend medical treatments.
-  4.  **ADVICE IS ALLOWED:** You **MUST** provide non-medical, supportive advice.
-      *   *Example:* "For a sore throat, you might try drinking warm honey ginger tea." (Allowed)
-      *   *Example:* "Rest in a dark, quiet room for your headache." (Allowed)
-      *   *Example:* "Since your stress is high, try this breathing exercise..." (Allowed)
-      *   *Example:* "Take Parol." (PROHIBITED)
+  **KİŞİLİĞİN:**
+  - **Samimi ve Enerjik:** "Merhaba" deyip geçme. "Harika görünüyorsun, bugün senin için neler yapabiliriz?" gibi enerjik gir.
+  - **Yaşam Koçu:** Sadece hastalıktan konuşma. Uyku düzeni, su içme alışkanlığı, spor rutini ve stres yönetimi hakkında koçluk yap.
+  - **Detaycı:** Kullanıcı "Yorgunum" derse, sadece "Dinlen" deme. Neden yorgun olabileceğini kan değerlerine (Demir, B12) bakarak yorumla ve çözüm önerileri sun.
 
-  **CONTEXT USAGE:**
-  - **BMI Awareness:** The user has a BMI of ${profile.bmi?.toFixed(1) || 'N/A'} (${getBMICategory(profile.bmi || 22)}). Use this to tailor fitness/nutrition advice (e.g., heavier exercise for normal weight, low impact for obese).
-  - **Blood Values:** If values are out of range, suggest natural dietary sources.
-  - **Daily Status:** User's nutrition score today is ${profile.dailyLogs[profile.dailyLogs.length - 1]?.nutritionScore || 'Unknown'}/10.
+  **YETENEKLERİN VE KURALLARIN:**
 
-  **PROCESS:**
-  1.  If the user mentions feeling unwell or a specific symptom, **IMMEDIATELY** call the \`logSymptom\` function to save it to their history.
-  2.  After the tool is called, continue the conversation by offering empathy and safe, home-remedy style suggestions based on their input and health profile.
+  1.  **BESLENME PROGRAMI HAZIRLAMA:**
+      - Eğer kullanıcı kilo vermek, almak veya sağlıklı beslenmek istiyorsa, ona **günlük örnek beslenme programı** hazırla.
+      - Programı hazırlarken kullanıcının kilosunu (${profile.weight}kg) ve VKİ'sini (${profile.bmi}) dikkate al.
+      - Örnek: "Senin için protein ağırlıklı bir gün planladım: Sabah yumurta..." gibi somut ol.
 
-  **LANGUAGE:**
-  ALWAYS reply in Turkish.
+  2.  **KAN DEĞERİ ANALİZİ:**
+      - Kullanıcının kan değerlerini sürekli kontrol et.
+      - Demir düşükse: "Demir değerin sınırda, bu halsizlik yapabilir. Kırmızı et, mercimek ve yanında C vitamini tüketmelisin." gibi spesifik beslenme önerisi ver.
+      - D3 düşükse: "Güneş eksikliğin var gibi, D vitamini takviyesi veya öğle saatlerinde 15dk yürüyüş iyi gelir." de.
+
+  3.  **SEMPTOM KAYDI (Çok Önemli):**
+      - Kullanıcı belirgin bir fiziksel şikayetten (baş ağrısı, mide bulantısı vb.) bahsederse **HEMEN** \`logSymptom\` aracını kullan ve kaydet.
+      - Kaydettikten sonra geçmiş olsun dileklerini ilet ve ilaç dışı doğal çözümler öner.
+
+  4.  **TIBBİ GÜVENLİK SINIRI:**
+      - ASLA "Sen kansersin" veya "Şu antibiyotiği iç" deme. Teşhis koyma.
+      - Ama "Bu belirtiler gribi andırıyor, bol sıvı alıp dinlenmelisin" diyebilirsin.
+      - Doğal yöntemleri (bitki çayları, egzersizler) önermekten çekinme.
+
+  **FORMAT:**
+  - Cevaplarında **kalın yazı**, madde işaretleri ve emojiler kullan. Okuması keyifli olsun.
+  - Kullanıcıyla sohbet et, ona sorular sor. "Bugün kaç bardak su içtin?" gibi.
 
   ${healthContext}
   `;
@@ -130,8 +132,8 @@ export const createGeminiChat = (profile: UserProfile): Chat => {
     model: 'gemini-2.5-flash',
     config: {
       systemInstruction: systemInstruction,
-      temperature: 0.7,
-      maxOutputTokens: 500,
+      temperature: 0.85, 
+      maxOutputTokens: 2000,
       tools: [{ functionDeclarations: [logSymptomTool] }],
     },
   });
@@ -139,8 +141,6 @@ export const createGeminiChat = (profile: UserProfile): Chat => {
 
 /**
  * Analyzes a blood test result image and extracts values.
- * @param base64Image The base64 string of the image (without data:image/... prefix)
- * @param mimeType The mime type of the image (e.g., image/jpeg)
  */
 export const analyzeBloodResult = async (base64Image: string, mimeType: string) => {
   if (!GEMINI_API_KEY) throw new Error("API Key Missing");
@@ -183,7 +183,6 @@ export const analyzeBloodResult = async (base64Image: string, mimeType: string) 
   });
 
   const text = response.text || "{}";
-  // Clean up markdown if model adds it despite instructions
   const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
   
   try {
@@ -191,5 +190,79 @@ export const analyzeBloodResult = async (base64Image: string, mimeType: string) 
   } catch (e) {
     console.error("Failed to parse Gemini JSON response", text);
     return {};
+  }
+};
+
+/**
+ * Estimates calories for a given food name and amount using Gemini.
+ */
+export const estimateCalories = async (foodName: string, amount: string): Promise<number | null> => {
+  if (!GEMINI_API_KEY) return null;
+  
+  try {
+    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+    const prompt = `
+    Sen uzman bir diyetisyensin.
+    Yiyecek: "${foodName}"
+    Miktar: "${amount}"
+
+    Bu miktardaki yiyeceğin tahmini kalorisini hesapla.
+    Sadece ve sadece tek bir sayı (integer) döndür. JSON veya metin ekleme.
+    Örnek: "120"
+    Eğer hesaplayamazsan "0" döndür.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt
+    });
+
+    const text = response.text?.trim();
+    const calories = parseInt(text || "0");
+    
+    return isNaN(calories) ? 0 : calories;
+  } catch (error) {
+    console.error("Calorie estimation error:", error);
+    return null;
+  }
+};
+
+/**
+ * Analyzes athlete performance log.
+ */
+export const analyzePerformance = async (log: PerformanceLog, profile: UserProfile): Promise<string> => {
+  if (!GEMINI_API_KEY) return "AI hizmetine erişilemiyor.";
+
+  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  const prompt = `
+  Sen uzman bir Spor Performans Koçusun.
+  Kullanıcı Adı: ${profile.name}
+  Yaş: ${profile.age}
+  Kilo: ${profile.weight}kg
+  
+  Kullanıcı yeni bir antrenman yaptı:
+  - Antrenman Türü: ${log.activityType}
+  - Süre: ${log.durationMinutes} dakika
+  - Zorluk (RPE 1-10): ${log.intensity}/10
+  - Hissiyat: ${log.feeling}
+  - Kullanıcı Notu: ${log.notes}
+
+  Görevin:
+  Bu antrenmanı analiz et ve kullanıcıya **kısa, motive edici ve toparlanma (recovery) odaklı** bir geri bildirim ver.
+  Eğer zorluk yüksekse (8-10) protein ve uyku öner.
+  Eğer hissiyat "yorgun" ise dinlenme öner.
+  Samimi ol, emoji kullan.
+  Maksimum 3 cümle olsun.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt
+    });
+    return response.text || "Antrenman kaydedildi.";
+  } catch (error) {
+    console.error("Performance analysis error:", error);
+    return "Antrenman başarıyla kaydedildi ancak AI şu an yanıt veremiyor.";
   }
 };

@@ -1,3 +1,4 @@
+
 import { UserProfile, DailyLog } from '../types';
 import { PYTHON_API_URL } from './config';
 
@@ -106,51 +107,67 @@ export const getImmunityDescription = (score: number): { title: string, desc: st
 };
 
 export const generateDailyFeedback = (log: DailyLog, profile: UserProfile): string => {
-  const generalAdvice = [];
-  const nutritionAdvice = [];
-  let sportsAdvice = "";
-
-  // --- 1. General Analysis ---
-  if (log.sleepHours < 6) generalAdvice.push("Uyku süren yetersiz, bu durum gün boyu odaklanma sorunu yaratabilir.");
-  else if (log.sleepHours > 9) generalAdvice.push("Fazla uyumak metabolizmanı yavaşlatıp halsizlik yapabilir.");
-  else generalAdvice.push("Uyku düzenin ideal, vücudun yenilenmiş görünüyor.");
-
-  if (log.waterIntake < 1.5) generalAdvice.push("Su tüketimin çok düşük, baş ağrısı riskin var.");
+  // Enhanced Report Generation with Storytelling
   
-  if (log.stressLevel > 7) generalAdvice.push("Stres seviyen alarm veriyor, bugün kendine 10 dakika nefes molası ver.");
-
-  // --- 2. Nutrition Analysis ---
-  const nutriScore = log.nutritionScore || 5;
-  if (nutriScore < 4) {
-    nutritionAdvice.push("Bugün beslenmen zayıf kalmış. Vücudun direnç kazanmak için proteine ve vitamine ihtiyaç duyuyor.");
-  } else if (nutriScore < 7) {
-    nutritionAdvice.push("Beslenmen fena değil ama daha fazla taze sebze/meyve tüketebilirsin.");
-  } else {
-    nutritionAdvice.push("Beslenme düzenin harika! Vücuduna ihtiyacı olan yakıtı vermişsin.");
+  const intro = `Merhaba ${profile.name}, bugünkü verilerini detaylıca inceledim.`;
+  
+  // 1. Mood & Stress Context
+  let moodSection = "";
+  if (log.mood) {
+    const moodMap: any = { happy: 'mutlu', energetic: 'enerjik', tired: 'yorgun', sad: 'üzgün', anxious: 'kaygılı', neutral: 'normal' };
+    moodSection = `Bugün kendini **${moodMap[log.mood]}** hissediyorsun. `;
+    if (log.mood === 'anxious' || log.mood === 'tired') {
+       if (log.stressLevel > 6) moodSection += "Stres seviyenin yüksek olması bu hissi tetikliyor olabilir. ";
+       else moodSection += "Stresin düşük olsa da belki fiziksel yorgunluk seni etkiliyor. ";
+    }
   }
 
-  // --- 3. Sports Readiness Calculation ---
-  const isSick = log.symptoms.length > 0;
-  const isTired = log.fatigueLevel > 7;
-  const isStressed = log.stressLevel > 8;
-  const isHungry = nutriScore < 3;
+  // 2. Day Type Context
+  let daySection = "";
+  if (log.dayType === 'exam') {
+    daySection = "Bugün bir **sınav günüydü**, bu yüzden stres seviyendeki artışlar çok normal. Vücudun 'savaş ya da kaç' modunda çalıştı. Şimdi dinlenme zamanı.";
+  } else if (log.dayType === 'sick') {
+    daySection = "Bugün **hasta** olduğunu belirttin. Geçmiş olsun! Şu an en önemli şey uyku ve sıvı tüketimi.";
+  } else if (log.dayType === 'weekend') {
+    daySection = "Hafta sonunun tadını çıkarıyorsun. ";
+  }
 
-  if (isSick) {
-    sportsAdvice = "❌ SPOR UYGUN DEĞİL: Vücudunda hastalık belirtileri var. Enerjini iyileşmek için kullanmalısın.";
-  } else if (isTired || isStressed) {
-    sportsAdvice = "⚠️ HAFİF TEMPO: Bugün vücudun yorgun veya stresli. Ağır antrenman yerine yoga veya hafif yürüyüş yap.";
-  } else if (isHungry) {
-    sportsAdvice = "⚠️ DİKKAT: Beslenmen zayıf olduğu için sporda performansın düşebilir. Önce kaliteli karbonhidrat almalısın.";
+  // 3. Screen Time Warning
+  let screenSection = "";
+  if (log.screenTime && log.screenTime > 6) {
+    screenSection = `⚠️ **DİKKAT:** Ekran süren ${log.screenTime} saat ile oldukça yüksek. Bu durum 'dijital göz yorgunluğu'na ve uyku kalitesinde düşüşe yol açabilir. Yatmadan 1 saat önce mavi ışıktan uzak durmalısın.`;
+  } else if (log.screenTime && log.screenTime > 3) {
+    screenSection = "Ekran süren makul seviyede.";
+  }
+
+  // 4. Physical Analysis
+  let physicalSection = "";
+  if (log.sleepHours < 6.5) physicalSection += "Uyku süren biyolojik yenilenme için yetersiz kalmış. ";
+  else physicalSection += "Uyku süren ideal aralıkta, bu bağışıklığını destekliyor. ";
+  
+  if (log.waterIntake < 2) physicalSection += "Ancak su tüketimin hedefin altında kalmış, baş ağrısı yaşamamak için 2 bardağa daha ihtiyacın var.";
+  else physicalSection += "Hidrasyon seviyen harika.";
+
+  // 5. Final Advice
+  let advice = "";
+  if (log.dayType === 'exam' || log.stressLevel > 7) {
+    advice = "🧘‍♂️ **ÖNERİ:** Bugün zihnin çok yoruldu. Uyumadan önce ılık bir duş al ve 10 dakika telefonsuz zaman geçir.";
+  } else if (log.nutritionScore > 7 && log.sleepHours > 7) {
+    advice = "💪 **ÖNERİ:** Vücudun şu an çok dirençli! Yarın için zorlu hedefler koyabilirsin.";
   } else {
-    sportsAdvice = "✅ SPORA UYGUN: Fiziksel ve zihinsel durumun gayet iyi. Bugün antrenman yapmak için harika bir gün!";
+    advice = "💤 **ÖNERİ:** Vücudunu dinlendirmek için bu akşam erken uyu.";
   }
 
   return `
-  📝 **GENEL ANALİZ:** ${generalAdvice.join(' ')}
+  ${intro}
   
-  🍎 **BESLENME:** ${nutritionAdvice.join(' ')}
+  ${moodSection} ${daySection}
   
-  🏃‍♂️ **SPOR DURUMU:** ${sportsAdvice}
+  📱 **DİJİTAL DENGE:** ${screenSection}
+  
+  🧪 **FİZİKSEL DURUM:** ${physicalSection}
+  
+  ${advice}
   `.trim();
 };
 

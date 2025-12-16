@@ -45,18 +45,46 @@ export interface DailyExercise {
 }
 // ---------------------------
 
+// --- ATHLETE & PERFORMANCE INTERFACES ---
+export interface PerformanceLog {
+  id: string;
+  date: string;
+  activityType: string; // e.g., "Koşu", "Ağırlık", "HIIT"
+  durationMinutes: number;
+  intensity: number; // 1-10 (RPE)
+  feeling: 'strong' | 'tired' | 'injured' | 'normal';
+  notes: string;
+  aiFeedback?: string;
+}
+
+export interface AppPreferences {
+  theme: 'light' | 'dark';
+  isAthleteMode: boolean;
+}
+// ----------------------------------------
+
+export type MoodType = 'happy' | 'neutral' | 'sad' | 'anxious' | 'tired' | 'energetic';
+export type DayType = 'school' | 'weekend' | 'exam' | 'sick' | 'holiday';
+
 export interface DailyLog {
   date: string;
   stressLevel: number; // 1-10
   fatigueLevel: number; // 1-10
-  nutritionScore: number; // 1-10 (New Field)
+  nutritionScore: number; // 1-10
   sleepHours: number;
-  symptoms: string[];
   waterIntake: number; // Liters
+  symptoms: string[];
   immunityScore: number; // Calculated
+  
+  // New Enhanced Fields
+  mood?: MoodType;
+  screenTime?: number; // Hours
+  dayType?: DayType;
+  userNotes?: string;
+
   dailyAdvice?: string; // Auto-generated detailed feedback
   
-  // New Fields for Diet Tracking
+  // Diet Tracking
   meals?: Meal[];
   exercises?: DailyExercise[];
   totalCaloriesIn?: number;
@@ -82,6 +110,19 @@ export interface UserProfile {
   dailyLogs: DailyLog[];
   symptomHistory: SymptomLog[];
   measurements?: BodyMeasurements; // New field for Fitness Page
+  
+  // New Preferences Field
+  preferences: AppPreferences;
+  performanceLogs: PerformanceLog[];
+
+  // Device Integrations
+  connectedDevice?: {
+    id: string;
+    name: string;
+    type: 'watch' | 'band' | 'app';
+    lastSync: string;
+    isConnected: boolean;
+  };
 }
 
 export interface ChatMessage {
@@ -118,7 +159,12 @@ export const INITIAL_PROFILE: UserProfile = {
     neck: 0,
     waist: 0,
     hip: 0
-  }
+  },
+  preferences: {
+    theme: 'light',
+    isAthleteMode: false
+  },
+  performanceLogs: []
 };
 
 // Common Symptoms for selection - Expanded List
