@@ -1,0 +1,5 @@
+{
+  "name": "SaglikAsist - AI Health Guardian",
+  "description": "A smart health assistant for TÜBİTAK 2204A. Tracks vitamins, blood tests, and daily stats to calculate immunity scores. Features a hybrid AI chat (Gemini + Offline Rule Engine) for non-medical health advice.",
+  "requestFramePermissions": []
+}
