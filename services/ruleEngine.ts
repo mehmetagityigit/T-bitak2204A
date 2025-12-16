@@ -1,8 +1,5 @@
 import { UserProfile, DailyLog } from '../types';
-
-// Vercel veya diğer platformlarda Environment Variable olarak tanımlayabilirsiniz.
-// Tanımlı değilse varsayılan olarak localhost kullanılır.
-const PYTHON_API_URL = process.env.REACT_APP_PYTHON_API_URL || "http://localhost:5000/api/chat";
+import { PYTHON_API_URL } from './config';
 
 export const getBMICategory = (bmi: number): string => {
   if (bmi < 18.5) return "Zayıf";

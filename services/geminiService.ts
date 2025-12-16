@@ -1,6 +1,7 @@
 import { GoogleGenAI, Chat, FunctionDeclaration, Type } from "@google/genai";
 import { UserProfile } from "../types";
 import { getBMICategory } from "./ruleEngine";
+import { GEMINI_API_KEY } from "./config";
 
 // Helper to format history for context
 const formatHealthContext = (profile: UserProfile): string => {
@@ -85,7 +86,12 @@ const logSymptomTool: FunctionDeclaration = {
 };
 
 export const createGeminiChat = (profile: UserProfile): Chat => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Use the safe API Key from config
+  if (!GEMINI_API_KEY) {
+    console.error("API Key missing! Check environment variables.");
+  }
+  
+  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
   
   const healthContext = formatHealthContext(profile);
 
