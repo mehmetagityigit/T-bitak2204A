@@ -16,7 +16,6 @@ import { Register } from './components/Register';
 import { UserProfile, INITIAL_PROFILE, DailyLog } from './types';
 import { Loader2 } from 'lucide-react';
 
-console.log("App mounted");
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -116,7 +115,5 @@ const App: React.FC = () => {
     </HashRouter>
   );
 };
-
-
 
 export default App;

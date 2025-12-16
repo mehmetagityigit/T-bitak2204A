@@ -1,8 +1,8 @@
 import { UserProfile, DailyLog } from '../types';
 
-// TODO: Python API adresinizi buraya yazın.
-// Flask veya FastAPI kullanıyorsanız genellikle port 5000 veya 8000 olur.
-const PYTHON_API_URL = "http://localhost:5000/api/chat";
+// Vercel veya diğer platformlarda Environment Variable olarak tanımlayabilirsiniz.
+// Tanımlı değilse varsayılan olarak localhost kullanılır.
+const PYTHON_API_URL = process.env.REACT_APP_PYTHON_API_URL || "http://localhost:5000/api/chat";
 
 export const getBMICategory = (bmi: number): string => {
   if (bmi < 18.5) return "Zayıf";
@@ -189,6 +189,6 @@ export const processOfflineQuery = async (query: string, profile: UserProfile): 
 
   } catch (error) {
     console.error("Python API Connection Error:", error);
-    return `⚠️ HATA: Python Kural Motoruna (${PYTHON_API_URL}) bağlanılamadı.\n\nLütfen Python sunucusunun çalıştığından emin olun. (Hata: ${error})`;
+    return `⚠️ HATA: Python Kural Motoruna (${PYTHON_API_URL}) bağlanılamadı.\n\nEğer Vercel üzerindeydeniz, Python API'nin HTTPS destekli bir sunucuda olduğundan emin olun. (Hata: ${error})`;
   }
 };
