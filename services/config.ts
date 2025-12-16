@@ -1,39 +1,51 @@
 
 // Bu dosya, uygulamanın çalıştığı ortama (Vite, Webpack, CRA) göre
 // Environment Variable'ları güvenli bir şekilde okur.
-// "process is not defined" hatasını önler.
 
-const getEnvVar = (key: string): string | undefined => {
-  // 1. Vite (import.meta.env) Kontrolü
-  try {
+// Vite, build sırasında "import.meta.env.VITE_..." gördüğü yeri statik olarak değiştirir.
+// Bu yüzden değişken isimlerini dinamik (getEnvVar(key)) olarak değil,
+// açıkça yazarak çağırmalıyız.
+
+let apiKey = "";
+let pythonApiUrl = "";
+
+// 1. API KEY Çözümleme
+try {
+  // @ts-ignore
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
     // @ts-ignore
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
-      // @ts-ignore
-      return import.meta.env[key];
-    }
-  } catch (e) { /* ignore error */ }
+    apiKey = import.meta.env.VITE_API_KEY || import.meta.env.REACT_APP_API_KEY || "";
+  }
+} catch (e) {}
 
-  // 2. Process.env (Node.js / Create React App) Kontrolü
-  try {
-    if (typeof process !== 'undefined' && process.env && process.env[key]) {
-      return process.env[key];
-    }
-  } catch (e) { /* ignore error */ }
+if (!apiKey && typeof process !== 'undefined' && process.env) {
+  apiKey = process.env.VITE_API_KEY || process.env.REACT_APP_API_KEY || process.env.API_KEY || "";
+}
 
-  return undefined;
-};
+// 2. Python URL Çözümleme
+try {
+  // @ts-ignore
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    // @ts-ignore
+    pythonApiUrl = import.meta.env.VITE_PYTHON_API_URL || import.meta.env.REACT_APP_PYTHON_API_URL || "";
+  }
+} catch (e) {}
 
-// Gemini API Key
-// Vercel'de Environment Variable eklerken 'VITE_API_KEY' veya 'REACT_APP_API_KEY' adını kullanın.
-export const GEMINI_API_KEY = 
-  getEnvVar("VITE_API_KEY") || 
-  getEnvVar("REACT_APP_API_KEY") || 
-  getEnvVar("API_KEY") || 
-  "";
+if (!pythonApiUrl && typeof process !== 'undefined' && process.env) {
+  pythonApiUrl = process.env.VITE_PYTHON_API_URL || process.env.REACT_APP_PYTHON_API_URL || process.env.PYTHON_API_URL || "";
+}
 
-// Python API URL
-export const PYTHON_API_URL = 
-  getEnvVar("VITE_PYTHON_API_URL") || 
-  getEnvVar("REACT_APP_PYTHON_API_URL") || 
-  getEnvVar("PYTHON_API_URL") || 
-  "http://localhost:5000/api/chat";
+// Varsayılan değer
+if (!pythonApiUrl) {
+  pythonApiUrl = "http://localhost:5000/api/chat";
+}
+
+// Debug için konsola yaz (Sadece geliştirme aşamasında görülsün diye)
+if (!apiKey) {
+  console.warn("⚠️ SağlıkAsist: Gemini API Anahtarı bulunamadı! Vercel Environment Variables ayarlarını kontrol edin (VITE_API_KEY).");
+} else {
+  console.log("✅ SağlıkAsist: API Anahtarı başarıyla yüklendi.");
+}
+
+export const GEMINI_API_KEY = apiKey;
+export const PYTHON_API_URL = pythonApiUrl;
