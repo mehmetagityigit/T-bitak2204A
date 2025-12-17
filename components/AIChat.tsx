@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage, UserProfile, SymptomLog } from '../types';
 import { createGeminiChat } from '../services/geminiService';
 import { processOfflineQuery } from '../services/ruleEngine';
-import { Send, WifiOff, Wifi, Bot, User, Stethoscope, Server } from 'lucide-react';
+import { Send, WifiOff, Wifi, Bot, User, Stethoscope, Server, FileText, AlertTriangle, Database } from 'lucide-react';
 import { Chat, GenerateContentResponse } from '@google/genai';
 
 interface Props {
@@ -33,6 +33,10 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const [loggedSymptomAlert, setLoggedSymptomAlert] = useState<string | null>(null);
+  
+  // Custom Response States (e.g. Doctor Note)
+  const [lastDoctorNote, setLastDoctorNote] = useState<string | null>(null);
+
   const chatRef = useRef<HTMLDivElement>(null);
   const geminiChatRef = useRef<Chat | null>(null);
 
@@ -48,7 +52,7 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
-  }, [messages, loggedSymptomAlert]);
+  }, [messages, loggedSymptomAlert, lastDoctorNote]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -64,15 +68,32 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
     setInput('');
     setIsLoading(true);
     setLoggedSymptomAlert(null);
+    setLastDoctorNote(null);
 
     try {
       let responseText = "";
       
       if (isOfflineMode) {
-        // Use Python API (Async)
-        responseText = await processOfflineQuery(userMsg.text, profile);
+        // --- OFFLINE RULE ENGINE MODE ---
+        const result = await processOfflineQuery(userMsg.text, profile);
+        responseText = result.response;
+
+        if (result.doctorNote) {
+           setLastDoctorNote(result.doctorNote);
+        }
+
+        // Store offline message to LocalStorage for Syncing later
+        const pendingSync = JSON.parse(localStorage.getItem('offline_symptoms') || '[]');
+        pendingSync.push({
+           text: userMsg.text,
+           risk: result.risk,
+           disease: result.disease,
+           timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('offline_symptoms', JSON.stringify(pendingSync));
+
       } else {
-        // Use Gemini
+        // --- ONLINE GEMINI MODE ---
         if (geminiChatRef.current) {
           try {
              let result: GenerateContentResponse = await geminiChatRef.current.sendMessage({
@@ -124,7 +145,7 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
 
           } catch (error) {
             console.error("Gemini Error:", error);
-            responseText = "Bağlantı hatası. Lütfen internetinizi kontrol edin veya Offline moda geçin.";
+            responseText = "Bağlantı hatası. İnternetiniz yoksa 'Çevrimdışı Mod'a geçebilirsiniz.";
           }
         }
       }
@@ -162,7 +183,7 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
             Sağlık Asistanı
           </h2>
           <p className="text-xs text-gray-500">
-            {isOfflineMode ? "Python API (Yerel)" : "Gemini AI (Bulut)"}
+            {isOfflineMode ? "Yerel Veritabanı (Offline)" : "Gemini AI (Online)"}
           </p>
         </div>
         <button 
@@ -171,8 +192,8 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
             isOfflineMode ? 'bg-indigo-100 text-indigo-700' : 'bg-teal-100 text-teal-700'
           }`}
         >
-          {isOfflineMode ? <Server size={14} /> : <Wifi size={14} />}
-          {isOfflineMode ? 'Yerel Sunucu' : 'Online Mod'}
+          {isOfflineMode ? <Database size={14} /> : <Wifi size={14} />}
+          {isOfflineMode ? 'Çevrimdışı Mod' : 'Online Mod'}
         </button>
       </div>
 
@@ -198,13 +219,31 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
                 {formatText(msg.text)}
                 {msg.isOfflineResponse && (
                   <div className="mt-2 text-[10px] opacity-70 border-t border-gray-200 pt-1 flex items-center gap-1 text-orange-600">
-                    <Server size={10} /> Python API yanıtı.
+                    <Database size={10} /> Yerel Veri Kaynağı
                   </div>
                 )}
               </div>
             </div>
           </div>
         ))}
+
+        {/* Doctor Note Card (For Medium/High Risk) */}
+        {lastDoctorNote && (
+           <div className="flex justify-start animate-in fade-in slide-in-from-bottom-4">
+              <div className="ml-10 max-w-[80%] bg-yellow-50 border border-yellow-200 p-4 rounded-2xl rounded-tl-none shadow-md">
+                 <div className="flex items-center gap-2 text-yellow-800 font-bold mb-2 border-b border-yellow-200 pb-2">
+                    <FileText size={18} /> Doktora İletilecek Not
+                 </div>
+                 <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono bg-white p-3 rounded border border-gray-100">
+                    {lastDoctorNote}
+                 </pre>
+                 <div className="mt-2 text-[10px] text-yellow-700 flex items-center gap-1">
+                    <AlertTriangle size={12} />
+                    Bu notu doktorunuzla daha iyi iletişim kurmak için kullanabilirsiniz.
+                 </div>
+              </div>
+           </div>
+        )}
 
         {/* System Alert for Logging */}
         {loggedSymptomAlert && (
@@ -237,7 +276,7 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder={isOfflineMode ? "Python API'ye sor..." : "Yapay Zeka'ya sor..."}
+            placeholder={isOfflineMode ? "Yerel veritabanında ara (Örn: Baş ağrısı)..." : "AI Yaşam Koçuna sor..."}
             className="flex-1 p-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all"
             disabled={isLoading}
           />
@@ -250,7 +289,7 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
           </button>
         </div>
         <p className="text-center text-[10px] text-gray-400 mt-2">
-          {isOfflineMode ? "Yerel Python sunucunuza veri gönderiliyor." : "Yapay zeka tıbbi teşhis koyamaz. Acil durumlarda doktora başvurunuz."}
+          {isOfflineMode ? "Çevrimdışı Mod: Veriler cihazınızdaki kural seti ile eşleştiriliyor." : "Yapay zeka tıbbi teşhis koyamaz. Acil durumlarda doktora başvurunuz."}
         </p>
       </div>
 

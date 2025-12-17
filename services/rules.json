@@ -1,0 +1,1269 @@
+{
+  "rules": [
+    {
+      "symptoms": ["ciltte kuruluk", "cildim kurudu", "pul pul dökülme"],
+      "risk": "Low",
+      "advice": "Bol su için ve nemlendirici kullanın. Soğuk havadan korunun."
+    },
+    {
+      "symptoms": ["ciltte yağlanma", "yüzüm yağlandı", "yağlı cilt"],
+      "risk": "Low",
+      "advice": "Cilt tipine uygun temizleyici kullanın. Yağlı yiyecekleri azaltın."
+    },
+    {
+      "symptoms": ["akne (sivilce)", "sivilce çıktı", "yüzümde sivilce"],
+      "risk": "Low",
+      "advice": "Sıkmayın, iz kalabilir. Salisilik asitli ürünler deneyebilirsiniz."
+    },
+    {
+      "symptoms": ["akne", "adet düzensizliği"],
+      "risk": "Medium",
+      "advice": "Polikistik Over Sendromu (PKOS) olabilir. Jinekolojiye görünün."
+    },
+    {
+      "symptoms": ["saçlı deride kaşıntı", "kafam kaşınıyor"],
+      "risk": "Low",
+      "advice": "Kepek veya egzama olabilir. Uygun şampuan kullanın."
+    },
+    {
+      "symptoms": ["saç kıran (bölgesel dökülme)"],
+      "risk": "Medium",
+      "advice": "Stres kaynaklı olabilir. Dermatoloji uzmanı görmelidir."
+    },
+    {
+      "symptoms": ["göz altı morlukları"],
+      "risk": "Low",
+      "advice": "Uykusuzluk, genetik veya demir eksikliği olabilir. Uyku düzenine dikkat edin."
+    },
+    {
+      "symptoms": ["kirpik dökülmesi"],
+      "risk": "Low",
+      "advice": "Göz makyajı veya blefarit (göz kapağı iltihabı) nedenli olabilir."
+    },
+    {
+      "symptoms": ["göz kapağında şişlik (pacalı)", "arpacık"],
+      "risk": "Low",
+      "advice": "Arpacık olabilir. Sıcak pansuman yapın, sıkmayın."
+    },
+    {
+      "symptoms": ["burun tıkanıklığı (kronik)"],
+      "risk": "Medium",
+      "advice": "Burun kemiği eğriliği (deviasyon) veya polip olabilir. KBB görmeli."
+    },
+    {
+      "symptoms": ["koku alma kaybı"],
+      "risk": "Medium",
+      "advice": "Viral enfeksiyon sonrası veya nörolojik olabilir. Uzun sürerse doktora gidin."
+    },
+    {
+      "symptoms": ["ağızda metalik tat"],
+      "risk": "Low",
+      "advice": "Diş eti hastalığı, ilaç yan etkisi veya gebelik belirtisi olabilir."
+    },
+    {
+      "symptoms": ["ağızda beyaz lekeler"],
+      "risk": "Medium",
+      "advice": "Pamukçuk (mantar) veya lökoplaki olabilir. Doktora danışın."
+    },
+    {
+      "symptoms": ["diş gıcırdatma", "çene ağrısı"],
+      "risk": "Low",
+      "advice": "Bruksizm. Gece plağı kullanımı dişlerinizi korur."
+    },
+    {
+      "symptoms": ["yutkunurken takılma hissi"],
+      "risk": "Medium",
+      "advice": "Globus hissi (stres) veya yemek borusu sorunu olabilir."
+    },
+    {
+      "symptoms": ["boyunda şişlik (yumru)"],
+      "risk": "Medium",
+      "advice": "Tiroid nodülü veya lenf bezi olabilir. Ultrason gerekebilir."
+    },
+    {
+      "symptoms": ["sırt ağrısı (kürek kemikleri arası)"],
+      "risk": "Medium",
+      "advice": "Kas tutulması olabileceği gibi mide veya safra yansıması da olabilir."
+    },
+    {
+      "symptoms": ["el bileğinde şişlik (kist)"],
+      "risk": "Low",
+      "advice": "Ganglion kisti olabilir. Ağrısızsa takibe alın."
+    },
+    {
+      "symptoms": ["parmaklarda kilitlenme"],
+      "risk": "Medium",
+      "advice": "Tetik parmak sendromu. Ortopedi uzmanına görünün."
+    },
+    {
+      "symptoms": ["tırnaklarda beyaz lekeler"],
+      "risk": "Low",
+      "advice": "Genellikle darbe sonucu oluşur, çinko eksikliği de olabilir."
+    },
+    {
+      "symptoms": ["tırnaklarda çukurlaşma"],
+      "risk": "Medium",
+      "advice": "Sedef hastalığı veya egzama belirtisi olabilir."
+    },
+    {
+      "symptoms": ["ayak başparmak ağrısı"],
+      "risk": "Medium",
+      "advice": "Gut hastalığı veya bunyon (kemik çıkıntısı) olabilir."
+    },
+    {
+      "symptoms": ["ayak tabanında sertleşme"],
+      "risk": "Low",
+      "advice": "Nasır oluşumu. Rahat ayakkabı ve ponza taşı kullanın."
+    },
+    {
+      "symptoms": ["bacaklarda varis"],
+      "risk": "Medium",
+      "advice": "Ayakta çok durmaktan olabilir. Varis çorabı rahatlatabilir."
+    },
+    {
+      "symptoms": ["dizden ses gelmesi (ağrısız)"],
+      "risk": "Low",
+      "advice": "Genellikle zararsızdır. Kasları güçlendirmek sesi azaltabilir."
+    },
+    {
+      "symptoms": ["diz kilitlenmesi"],
+      "risk": "Medium",
+      "advice": "Menisküs yırtığı belirtisi olabilir. MR gerekebilir."
+    },
+    {
+      "symptoms": ["kalça ağrısı"],
+      "risk": "Medium",
+      "advice": "Kireçlenme veya bursit olabilir. Yürüyüş mesafesini ayarlayın."
+    },
+    {
+      "symptoms": ["kuyruk sokumu ağrısı"],
+      "risk": "Low",
+      "advice": "Uzun süre sert zeminde oturmaktan olabilir. Simit yastık kullanın."
+    },
+    {
+      "symptoms": ["mide şişkinliği (yemek sonrası)"],
+      "risk": "Low",
+      "advice": "Hızlı yeme veya gazlı içeceklerden olabilir. Yavaş çiğneyin."
+    },
+    {
+      "symptoms": ["sürekli geğirme"],
+      "risk": "Low",
+      "advice": "Hava yutma veya asitli gıda tüketimi. Gaz yapıcı gıdaları kesin."
+    },
+    {
+      "symptoms": ["karında guruldama"],
+      "risk": "Low",
+      "advice": "Bağırsak hareketleri normaldir. Açlık veya hazımsızlık olabilir."
+    },
+    {
+      "symptoms": ["rektal kanama (damla şeklinde)"],
+      "risk": "Medium",
+      "advice": "Hemoroid veya çatlak. Kabız kalmamaya özen gösterin."
+    },
+    {
+      "symptoms": ["makatta akıntı"],
+      "risk": "Medium",
+      "advice": "Anal fistül veya enfeksiyon olabilir. Genel cerrahi görmeli."
+    },
+    {
+      "symptoms": ["sık idrara çıkma (gece)"],
+      "risk": "Medium",
+      "advice": "Prostat büyümesi veya kalp yetmezliği başlangıcı olabilir."
+    },
+    {
+      "symptoms": ["idrar kaçırma (öksürürken)"],
+      "risk": "Medium",
+      "advice": "Stres tipi inkontinans. Kegel egzersizleri faydalıdır."
+    },
+    {
+      "symptoms": ["idrar renginde koyulaşma"],
+      "risk": "Low",
+      "advice": "Susuzluk belirtisidir. Su tüketimini artırın."
+    },
+    {
+      "symptoms": ["köpüklü idrar"],
+      "risk": "Medium",
+      "advice": "İdrarda protein kaçağı (böbrek sorunu) olabilir. Tahlil yaptırın."
+    },
+    {
+      "symptoms": ["peniste akıntı"],
+      "risk": "High",
+      "advice": "Bel soğukluğu veya klamidya olabilir. Antibiyotik şarttır."
+    },
+    {
+      "symptoms": ["erken boşalma"],
+      "risk": "Low",
+      "advice": "Psikolojik veya stres kaynaklı olabilir. Üroloğa danışılabilir."
+    },
+    {
+      "symptoms": ["sertleşme sorunu"],
+      "risk": "Medium",
+      "advice": "Diyabet, kalp damar sorunu veya stres kaynaklı olabilir."
+    },
+    {
+      "symptoms": ["vajinal kuruluk"],
+      "risk": "Low",
+      "advice": "Menopoz dönemi veya hormonal olabilir. Nemlendirici kullanılabilir."
+    },
+    {
+      "symptoms": ["ağrılı cinsel ilişki"],
+      "risk": "Medium",
+      "advice": "Enfeksiyon, vajinismus veya kist olabilir. Jinekolojiye gidin."
+    },
+    {
+      "symptoms": ["adet sancısı (aşırı)"],
+      "risk": "Medium",
+      "advice": "Endometriozis (çikolata kisti) olabilir. Doktora danışın."
+    },
+    {
+      "symptoms": ["ara kanama (lekelenme)"],
+      "risk": "Medium",
+      "advice": "Hormonal dengesizlik, polip veya enfeksiyon olabilir."
+    },
+    {
+      "symptoms": ["menopoz sonrası kanama"],
+      "risk": "High",
+      "advice": "Rahim kanseri riski taşır. Vakit kaybetmeden doktora gidin."
+    },
+    {
+      "symptoms": ["gebelikte kanama"],
+      "risk": "High",
+      "advice": "Düşük tehdidi olabilir. Acilen kadın doğum uzmanına ulaşın."
+    },
+    {
+      "symptoms": ["gebelikte şiddetli baş ağrısı", "ödem"],
+      "risk": "High",
+      "advice": "Preeklampsi (gebelik zehirlenmesi) riski. Acil durumdur."
+    },
+    {
+      "symptoms": ["bebekte emme güçlüğü"],
+      "risk": "Medium",
+      "advice": "Enfeksiyon veya nörolojik sorun olabilir. Çocuk doktoru görmeli."
+    },
+    {
+      "symptoms": ["bebekte sarılık (ilk 24 saat)"],
+      "risk": "High",
+      "advice": "Kan uyuşmazlığı olabilir. Acil fototerapi gerekebilir."
+    },
+    {
+      "symptoms": ["çocukta büyüme ağrısı"],
+      "risk": "Low",
+      "advice": "Genellikle bacaklarda akşamları olur. Masaj iyi gelir."
+    },
+    {
+      "symptoms": ["dikkat dağınıklığı", "hiperaktivite"],
+      "risk": "Medium",
+      "advice": "DEHB olabilir. Çocuk psikiyatrisine danışın."
+    },
+    {
+      "symptoms": ["konuşma gecikmesi (çocuk)"],
+      "risk": "Medium",
+      "advice": "İşitme testi ve gelişimsel değerlendirme yapılmalıdır."
+    },
+    {
+      "symptoms": ["sosyal içe kapanma"],
+      "risk": "Medium",
+      "advice": "Depresyon veya sosyal anksiyete olabilir."
+    },
+    {
+      "symptoms": ["takıntılı düşünceler"],
+      "risk": "Medium",
+      "advice": "OKB belirtisi olabilir. Terapi desteği faydalıdır."
+    },
+    {
+      "symptoms": ["panik atak"],
+      "risk": "Medium",
+      "advice": "Kalp krizi sanılabilir. Nefes kontrolü yapın, geçicidir."
+    },
+    {
+      "symptoms": ["hafıza kaybı (yakın geçmiş)"],
+      "risk": "High",
+      "advice": "Demans veya kafa travması sonrası olabilir. Nörolojiye gidin."
+    },
+    {
+      "symptoms": ["konuşurken kelime bulamama"],
+      "risk": "Medium",
+      "advice": "Stres, yorgunluk veya nörolojik başlangıç olabilir."
+    },
+    {
+      "symptoms": ["yazı yazarken el titremesi"],
+      "risk": "Medium",
+      "advice": "Esansiyel tremor olabilir. Nöroloji değerlendirmeli."
+    },
+    {
+      "symptoms": ["yürürken denge kaybı"],
+      "risk": "High",
+      "advice": "Beyincik veya iç kulak sorunu olabilir. Düşme riskine dikkat."
+    },
+    {
+      "symptoms": ["vücudun bir tarafını ihmal etme"],
+      "risk": "High",
+      "advice": "Beyin hasarı belirtisi olabilir. Acil tetkik gerekir."
+    },
+    {
+      "symptoms": ["yara yerinde kızarıklık ve ısı"],
+      "risk": "Medium",
+      "advice": "Yara enfeksiyonu belirtisi. Antibiyotik gerekebilir."
+    },
+    {
+      "symptoms": ["ameliyat izinde kabarma"],
+      "risk": "Low",
+      "advice": "Keloid oluşumu olabilir. Cildiye ile görüşün."
+    },
+    {
+      "symptoms": ["dikiş atması"],
+      "risk": "High",
+      "advice": "Yara açıldıysa enfeksiyon riski artar. Tekrar dikilmesi gerekebilir."
+    },
+    {
+      "symptoms": ["ilaç sonrası döküntü"],
+      "risk": "High",
+      "advice": "İlaç alerjisi. İlacı kesin ve doktora danışın."
+    },
+    {
+      "symptoms": ["aşı yeri ağrısı"],
+      "risk": "Low",
+      "advice": "Normal bir yan etkidir. Soğuk kompres yapın."
+    },
+    {
+      "symptoms": ["kan verirken bayılma"],
+      "risk": "Low",
+      "advice": "Vazovagal senkop. Kan vermeden önce su için ve tok olun."
+    },
+    {
+      "symptoms": ["uçak yolculuğunda kulak tıkanması"],
+      "risk": "Low",
+      "advice": "Basınç farkı. Yutkunun veya sakız çiğneyin."
+    },
+    {
+      "symptoms": ["deniz tutması"],
+      "risk": "Low",
+      "advice": "Ufuk çizgisine bakın, temiz hava alın."
+    },
+    {
+      "symptoms": ["yüksek rakımda baş ağrısı"],
+      "risk": "Medium",
+      "advice": "Akut dağ hastalığı. Bol su için, gerekirse irtifa kaybedin."
+    },
+    {
+      "symptoms": ["klimadan dolayı tutulma"],
+      "risk": "Low",
+      "advice": "Kas spazmı. Sıcak duş ve kas gevşetici krem kullanın."
+    },
+    {
+      "symptoms": ["bilgisayar başında bilek ağrısı"],
+      "risk": "Medium",
+      "advice": "Karpal tünel veya RSI. Ergonomik mouse kullanın."
+    },
+    {
+      "symptoms": ["ekran başında göz yorgunluğu"],
+      "risk": "Low",
+      "advice": "20-20-20 kuralını uygulayın (20 dk'da bir 20 sn uzağa bak)."
+    },
+    {
+      "symptoms": ["ağır kaldırma sonrası kasık ağrısı"],
+      "risk": "Medium",
+      "advice": "Kasık fıtığı şüphesi. Şişlik varsa genel cerrahiye gidin."
+    },
+    {
+      "symptoms": ["spor sonrası koyu idrar"],
+      "risk": "High",
+      "advice": "Rabdomiyoliz (kas yıkımı) olabilir. Böbrekler için tehlikelidir, acile gidin."
+    },
+    {
+      "symptoms": ["koşu sırasında dalak şişmesi"],
+      "risk": "Low",
+      "advice": "Nefes ritmini düzenleyin, temponuzu düşürün."
+    },
+    {
+      "symptoms": ["ayak tırnağında morarma"],
+      "risk": "Low",
+      "advice": "Ayakkabı vurması. Tırnak düşebilir, kendiliğinden iyileşir."
+    },
+    {
+      "symptoms": ["avuç içi kaşıntısı"],
+      "risk": "Low",
+      "advice": "Egzama veya karaciğer enzim yüksekliği olabilir."
+    },
+    {
+      "symptoms": ["vücutta kırmızı benler (cherry angioma)"],
+      "risk": "Low",
+      "advice": "Genellikle yaşla artan zararsız damar yumaklarıdır."
+    },
+    {
+      "symptoms": ["boyunda et benleri"],
+      "risk": "Low",
+      "advice": "Sürtünme veya insülin direnci kaynaklı olabilir."
+    },
+    {
+      "symptoms": ["topuk çatlağı"],
+      "risk": "Low",
+      "advice": "Nem eksikliği veya mantar. Vazelin sürüp çorap giyin."
+    },
+    {
+      "symptoms": ["aşırı kıllanma (kadınlarda)"],
+      "risk": "Medium",
+      "advice": "Hormonal bozukluk (hirsutizm) olabilir. Endokrinolojiye gidin."
+    },
+    {
+      "symptoms": ["ter kokusunda değişiklik"],
+      "risk": "Low",
+      "advice": "Beslenme (baharat, sarımsak) veya hormonal değişimden olabilir."
+    },
+    {
+      "symptoms": ["soğuğa tahammülsüzlük"],
+      "risk": "Medium",
+      "advice": "Hipotiroidi veya kansızlık belirtisi olabilir."
+    },
+    {
+      "symptoms": ["sıcağa tahammülsüzlük", "çarpıntı"],
+      "risk": "Medium",
+      "advice": "Hipertiroidi (Zehirli guatr) şüphesi. Tahlil yaptırın."
+    },
+    {
+      "symptoms": ["glüten yiyince şişkinlik"],
+      "risk": "Medium",
+      "advice": "Çölyak veya glüten hassasiyeti olabilir. Gastroenterolojiye gidin."
+    },
+    {
+      "symptoms": ["süt içince gaz ve ishal"],
+      "risk": "Low",
+      "advice": "Laktoz intoleransı. Laktozsuz ürünler tercih edin."
+    },
+    {
+      "symptoms": ["şeker yiyince uyku basması"],
+      "risk": "Medium",
+      "advice": "İnsülin direnci veya reaktif hipoglisemi olabilir."
+    },
+    {
+      "symptoms": ["ağız kenarında çatlaklar"],
+      "risk": "Low",
+      "advice": "B2 vitamini veya demir eksikliği olabilir."
+    },
+    {
+      "symptoms": ["dil şişmesi"],
+      "risk": "High",
+      "advice": "Alerjik reaksiyon (anjiyoödem) olabilir. Nefes darlığı varsa acile."
+    },
+    {
+      "symptoms": ["dil pası (beyaz tabaka)"],
+      "risk": "Low",
+      "advice": "Sindirim sistemi sorunu veya ağız hijyeni eksikliği."
+    },
+    {
+      "symptoms": ["diş etinde şişlik (apse)"],
+      "risk": "Medium",
+      "advice": "Enfeksiyon yayılabilir. Diş hekimine gidin."
+    },
+    {
+      "symptoms": ["20'lik diş ağrısı"],
+      "risk": "Medium",
+      "advice": "Gömülü kalmış veya iltihaplanmış olabilir. Çekim gerekebilir."
+    },
+    {
+      "symptoms": ["çene kilitlenmesi"],
+      "risk": "High",
+      "advice": "Çene eklemi dislokasyonu veya tetanos riski. Acile başvurun."
+    },
+    {
+      "symptoms": ["horlama ve nefes durması"],
+      "risk": "Medium",
+      "advice": "Uyku apnesi. Kalp hastalığı riskini artırır, tedavi olun."
+    },
+    {
+      "symptoms": ["uyurgezerlik"],
+      "risk": "Low",
+      "advice": "Güvenlik önlemleri alın (pencere kilidi vb.). Stresi azaltın."
+    },
+    {
+      "symptoms": ["karabasan (uyku felci)"],
+      "risk": "Low",
+      "advice": "Zararsızdır. Düzensiz uyku ve stresten kaçının."
+    },
+    {
+      "symptoms": ["sürekli susama hissi"],
+      "risk": "Medium",
+      "advice": "Diyabet veya şekersiz diyabet (diabetes insipidus) olabilir."
+    },
+    {
+      "symptoms": ["kilo alamama"],
+      "risk": "Medium",
+      "advice": "Hipertiroidi, parazit veya emilim bozukluğu olabilir."
+    },
+    {
+      "symptoms": ["göbek çevresinde yağlanma"],
+      "risk": "Medium",
+      "advice": "Metabolik sendrom ve insülin direnci riski. Spora başlayın."
+    },
+    {
+      "symptoms": ["vücut kitle indeksi > 30"],
+      "risk": "Medium",
+      "advice": "Obezite. Kalp ve eklem sağlığı için diyetisyen desteği alın."
+    },
+    {
+      "symptoms": ["sigara içme isteği (bağımlılık)"],
+      "risk": "High",
+      "advice": "Akciğer kanseri ve KOAH riski. Sigara bırakma polikliniğine başvurun."
+    },
+    {
+      "symptoms": ["alkol sonrası el titremesi"],
+      "risk": "Medium",
+      "advice": "Alkol yoksunluğu belirtisi olabilir. Destek alın."
+    },
+    {
+      "symptoms": ["göze kimyasal sıçraması"],
+      "risk": "High",
+      "advice": "Körlük riski. 15 dk boyunca gözü açık tutarak yıkayın, hastaneye koşun."
+    },
+    {
+      "symptoms": ["zehirli gaz soluma"],
+      "risk": "High",
+      "advice": "Akciğer ödemi riski. Hemen temiz havaya çıkın ve 112'yi arayın."
+    },
+    {
+      "symptoms": ["soba zehirlenmesi şüphesi"],
+      "risk": "High",
+      "advice": "Karbonmonoksit sessiz öldürür. Camları açın, binayı terk edin."
+    },
+    {
+      "symptoms": ["parmak kesilmesi (derin)"],
+      "risk": "Medium",
+      "advice": "Temiz bezle baskı yapın. Kan durmazsa dikiş gerekebilir."
+    },
+    {
+      "symptoms": ["parmak kopması"],
+      "risk": "High",
+      "advice": "Kopan parçayı buzlu (direkt temas etmeden) poşete koyun, acile gidin."
+    },
+    {
+      "symptoms": ["kafa travması sonrası kusma"],
+      "risk": "High",
+      "advice": "Beyin kanaması belirtisi olabilir. Hemen tomografi çekilmeli."
+    },
+    {
+      "symptoms": ["gözde ani şaşılık"],
+      "risk": "High",
+      "advice": "Beyin tümörü veya sinir felci olabilir. Acil nöroloji/göz muayenesi."
+    },
+    {
+      "symptoms": ["bebekte bıngıldak şişliği"],
+      "risk": "High",
+      "advice": "Menenjit veya kafa içi basınç artışı olabilir. Acil durumdur."
+    },
+    {
+      "symptoms": ["göbek düşmesi hissi"],
+      "risk": "Low",
+      "advice": "Tıbbi karşılığı yoktur, genellikle kas spazmı veya aort damarı atımıdır."
+    },
+    {
+      "symptoms": ["halsizlik ve saç dökülmesi"],
+      "risk": "Medium",
+      "advice": "Demir eksikliği anemisi veya hipotiroidi tipik belirtileridir."
+    },
+    {
+      "symptoms": ["ciltte mor çatlaklar (stria)"],
+      "risk": "Medium",
+      "advice": "Cushing sendromu (kortizol fazlalığı) olabilir. Endokrinolojiye gidin."
+    },
+    {
+      "symptoms": ["baş ağrısı", "kafam ağrıyor", "başağrısı"],
+      "risk": "Low",
+      "advice": "Gerilim tipi olabilir. Dinlenin, bol su için ve karanlık bir odada bekleyin."
+    },
+    {
+      "symptoms": ["baş ağrısı", "ışık hassasiyeti"],
+      "risk": "Medium",
+      "advice": "Migren atağı olabilir. Sessiz ve karanlık bir odada istirahat edin."
+    },
+    {
+      "symptoms": ["baş ağrısı", "ense sertliği"],
+      "risk": "High",
+      "advice": "Menenjit şüphesi olabilir. Çenenizi göğsünüze değdirmekte zorlanıyorsanız acile başvurun."
+    },
+    {
+      "symptoms": ["baş ağrısı", "görme bozukluğu"],
+      "risk": "Medium",
+      "advice": "Göz kaynaklı veya migren aurası olabilir. Göz doktoruna veya nörolojiye görünün."
+    },
+    {
+      "symptoms": ["baş ağrısı", "konuşma bozukluğu"],
+      "risk": "High",
+      "advice": "İnme (felç) belirtisi olabilir. Derhal 112'yi arayın."
+    },
+    {
+      "symptoms": ["tek taraflı baş ağrısı", "göz yaşarması"],
+      "risk": "Medium",
+      "advice": "Küme baş ağrısı olabilir. Nöroloji uzmanına danışın."
+    },
+    {
+      "symptoms": ["baş dönmesi"],
+      "risk": "Low",
+      "advice": "Ani hareketten kaçının, oturun ve su için."
+    },
+    {
+      "symptoms": ["baş dönmesi", "kulak çınlaması"],
+      "risk": "Medium",
+      "advice": "Vertigo veya Meniere hastalığı olabilir. KBB uzmanına görünün."
+    },
+    {
+      "symptoms": ["baş dönmesi", "bayılma hissi"],
+      "risk": "Medium",
+      "advice": "Tansiyon düşüklüğü veya kansızlık olabilir. Uzanıp ayaklarınızı yukarı kaldırın."
+    },
+    {
+      "symptoms": ["gözde kızarıklık"],
+      "risk": "Low",
+      "advice": "Konjonktivit veya tahriş olabilir. Hijyene dikkat edin, elinizi sürmeyin."
+    },
+    {
+      "symptoms": ["gözde ağrı", "ışık hassasiyeti"],
+      "risk": "Medium",
+      "advice": "Üveit veya kornea sorunu olabilir. Göz doktoruna gidin."
+    },
+    {
+      "symptoms": ["gözde çapaklanma"],
+      "risk": "Low",
+      "advice": "Enfeksiyon olabilir. Ilık suyla temizleyin, geçmezse doktora gidin."
+    },
+    {
+      "symptoms": ["çift görme"],
+      "risk": "High",
+      "advice": "Nörolojik bir sorun veya kas problemi olabilir. Acil değerlendirme gerekir."
+    },
+    {
+      "symptoms": ["ani görme kaybı"],
+      "risk": "High",
+      "advice": "Retina dekolmanı veya damar tıkanıklığı olabilir. Vakit kaybetmeden acile gidin."
+    },
+    {
+      "symptoms": ["göz önünde siyah noktalar"],
+      "risk": "Medium",
+      "advice": "Göz içi sıvısında dejenerasyon veya retina yırtığı habercisi olabilir. Kontrol şart."
+    },
+    {
+      "symptoms": ["kulak ağrısı"],
+      "risk": "Low",
+      "advice": "Dış kulak yolu enfeksiyonu veya basınç farkı olabilir. Kulağınızı kuru tutun."
+    },
+    {
+      "symptoms": ["kulak akıntısı"],
+      "risk": "Medium",
+      "advice": "Kulak zarı delinmesi veya orta kulak iltihabı olabilir. Doktora başvurun."
+    },
+    {
+      "symptoms": ["işitme kaybı (ani)"],
+      "risk": "High",
+      "advice": "Ani işitme kaybı acil tedavi gerektirir (ilk 72 saat kritiktir). KBB aciline gidin."
+    },
+    {
+      "symptoms": ["burun kanaması"],
+      "risk": "Low",
+      "advice": "Başınızı öne eğin ve burun kanatlarına baskı yapın. 10 dakikada durmazsa acile gidin."
+    },
+    {
+      "symptoms": ["sık burun kanaması", "ciltte morluklar"],
+      "risk": "High",
+      "advice": "Kan pıhtılaşma sorunu veya lösemi belirtisi olabilir. Hematolojiye başvurun."
+    },
+    {
+      "symptoms": ["burun tıkanıklığı", "yüzde dolgunluk"],
+      "risk": "Low",
+      "advice": "Sinüzit belirtisidir. Buhar banyosu ve tuzlu suyla yıkama yapın."
+    },
+    {
+      "symptoms": ["boğaz ağrısı", "yutkunma güçlüğü"],
+      "risk": "Medium",
+      "advice": "Tonsilit veya farenjit olabilir. Sıvı tüketin, ateş artarsa doktora gidin."
+    },
+    {
+      "symptoms": ["ses kısıklığı"],
+      "risk": "Low",
+      "advice": "Ses telleri tahrişi olabilir. Sesi dinlendirin (fısıldamayın, susun)."
+    },
+    {
+      "symptoms": ["ses kısıklığı (2 haftadan uzun)"],
+      "risk": "High",
+      "advice": "Gırtlak nodülü veya tümör riski olabilir. KBB muayenesi şarttır."
+    },
+    {
+      "symptoms": ["ağız kokusu"],
+      "risk": "Low",
+      "advice": "Diş çürüğü veya mide sorunu olabilir. Diş hekimine görünün."
+    },
+    {
+      "symptoms": ["diş ağrısı"],
+      "risk": "Medium",
+      "advice": "Diş enfeksiyonu veya apse olabilir. Diş hekimine başvurun."
+    },
+    {
+      "symptoms": ["diş ağrısı", "yüzde şişlik"],
+      "risk": "High",
+      "advice": "Apse yayılıyor olabilir. Antibiyotik tedavisi için acilen diş hekimine gidin."
+    },
+    {
+      "symptoms": ["öksürük (kuru)"],
+      "risk": "Low",
+      "advice": "Alerjik veya viral olabilir. Odayı nemlendirin."
+    },
+    {
+      "symptoms": ["öksürük (balgamlı)"],
+      "risk": "Medium",
+      "advice": "Bronşit veya pnömoni başlangıcı olabilir. Balgam rengi yeşil/sarı ise doktora gidin."
+    },
+    {
+      "symptoms": ["öksürük", "kan gelmesi"],
+      "risk": "High",
+      "advice": "Verem, akciğer kanseri veya emboli olabilir. Acil göğüs hastalıkları muayenesi gerekir."
+    },
+    {
+      "symptoms": ["nefes darlığı (hareketle)"],
+      "risk": "Medium",
+      "advice": "KOAH, astım veya kondisyon düşüklüğü olabilir. Kardiyoloji veya göğüs hastalıklarına gidin."
+    },
+    {
+      "symptoms": ["nefes darlığı (yatarken artan)"],
+      "risk": "High",
+      "advice": "Kalp yetmezliği belirtisi olabilir (Ortopne). Kardiyolojiye başvurun."
+    },
+    {
+      "symptoms": ["göğüs ağrısı (baskı tarzında)"],
+      "risk": "High",
+      "advice": "Kalp krizi riski. Hareket etmeyin, 112'yi arayın."
+    },
+    {
+      "symptoms": ["göğüs ağrısı (nefes alırken batan)"],
+      "risk": "Medium",
+      "advice": "Kas ağrısı veya akciğer zarı iltihabı (plörezi) olabilir. Doktora danışın."
+    },
+    {
+      "symptoms": ["çarpıntı", "terleme"],
+      "risk": "Medium",
+      "advice": "Panik atak veya ritim bozukluğu olabilir. Sakinleşmeye çalışın, geçmezse acile gidin."
+    },
+    {
+      "symptoms": ["düzensiz kalp atışı"],
+      "risk": "Medium",
+      "advice": "Aritmi (Atriyal fibrilasyon vb.) olabilir. EKG çektirmelisiniz."
+    },
+    {
+      "symptoms": ["mide yanması"],
+      "risk": "Low",
+      "advice": "Reflü veya gastrit olabilir. Asitli yiyeceklerden kaçının, yatarken başınızı yükseltin."
+    },
+    {
+      "symptoms": ["mide bulantısı", "kusma"],
+      "risk": "Medium",
+      "advice": "Gıda zehirlenmesi veya virüs olabilir. Su kaybını önleyin."
+    },
+    {
+      "symptoms": ["kusma (kahve telvesi görünümünde)"],
+      "risk": "High",
+      "advice": "Mide kanaması belirtisidir. Acilen hastaneye gidin."
+    },
+    {
+      "symptoms": ["karın ağrısı (sağ alt kadran)"],
+      "risk": "High",
+      "advice": "Apandisit şüphesi. Ağrı artıyorsa acil cerrahi konsültasyonu gerekir."
+    },
+    {
+      "symptoms": ["karın ağrısı (sağ üst kadran)", "sırt ağrısı"],
+      "risk": "Medium",
+      "advice": "Safra kesesi taşı veya iltihabı olabilir. Yağlı yemekten kaçının, doktora gidin."
+    },
+    {
+      "symptoms": ["karın şişliği", "gaz çıkaramama"],
+      "risk": "High",
+      "advice": "Bağırsak tıkanıklığı (ileus) olabilir. Acil durumdur."
+    },
+    {
+      "symptoms": ["ishal (sulu)"],
+      "risk": "Low",
+      "advice": "Bol sıvı tüketin, probiyotik alın. 3 günden uzun sürerse doktora gidin."
+    },
+    {
+      "symptoms": ["kabızlık"],
+      "risk": "Low",
+      "advice": "Lifli gıda ve su tüketimini artırın. Hareket edin."
+    },
+    {
+      "symptoms": ["dışkıda taze kan"],
+      "risk": "Medium",
+      "advice": "Hemoroid veya anal fissür olabilir. Ancak rektal kanser ekarte edilmelidir."
+    },
+    {
+      "symptoms": ["siyah dışkı"],
+      "risk": "High",
+      "advice": "Üst sindirim sistemi kanaması (mide ülseri vb.) olabilir. Acile başvurun."
+    },
+    {
+      "symptoms": ["idrarda yanma"],
+      "risk": "Low",
+      "advice": "Sistit (idrar yolu enfeksiyonu) olabilir. Bol su için, doktora gidin."
+    },
+    {
+      "symptoms": ["sık idrara çıkma", "susama"],
+      "risk": "Medium",
+      "advice": "Diyabet (şeker hastalığı) belirtisi olabilir. Açlık kan şekerinize baktırın."
+    },
+    {
+      "symptoms": ["idrar yapamama (tıkanıklık)"],
+      "risk": "High",
+      "advice": "Prostat büyümesi veya taş tıkanıklığı olabilir. Acil sonda takılması gerekebilir."
+    },
+    {
+      "symptoms": ["idrarda kan (ağrısız)"],
+      "risk": "High",
+      "advice": "Mesane tümörü riski taşır. Mutlaka üroloji uzmanına görünün."
+    },
+    {
+      "symptoms": ["yan ağrısı (şiddetli)", "bulantı"],
+      "risk": "High",
+      "advice": "Böbrek taşı düşürüyor olabilirsiniz. Ağrı kesici ve tedavi için acile başvurun."
+    },
+    {
+      "symptoms": ["vajinal akıntı (kötü kokulu)"],
+      "risk": "Medium",
+      "advice": "Enfeksiyon (bakteriyel vajinozis vb.) olabilir. Jinekolojiye başvurun."
+    },
+    {
+      "symptoms": ["adet düzensizliği"],
+      "risk": "Low",
+      "advice": "Stres veya hormonal dengesizlik olabilir. Takip edin."
+    },
+    {
+      "symptoms": ["adet kanamasının aşırı olması"],
+      "risk": "Medium",
+      "advice": "Miyom veya polip olabilir. Kansızlık yapabilir, doktora görünün."
+    },
+    {
+      "symptoms": ["testis ağrısı"],
+      "risk": "Medium",
+      "advice": "Enfeksiyon veya varikosel olabilir. Ürolojiye başvurun."
+    },
+    {
+      "symptoms": ["testis ağrısı (ani ve şiddetli)"],
+      "risk": "High",
+      "advice": "Testis torsiyonu (dönmesi) olabilir. Organ kaybını önlemek için dakikalar önemlidir, acile koşun."
+    },
+    {
+      "symptoms": ["eklem ağrısı"],
+      "risk": "Low",
+      "advice": "Hava değişimi veya zorlama olabilir. Sıcak uygulama ve dinlenme deneyin."
+    },
+    {
+      "symptoms": ["eklemde şişlik ve sıcaklık"],
+      "risk": "Medium",
+      "advice": "Artrit veya gut hastalığı olabilir. Romatoloji veya ortopediye görünün."
+    },
+    {
+      "symptoms": ["sabah tutukluğu (eklemlerde)"],
+      "risk": "Medium",
+      "advice": "Romatoid artrit belirtisi olabilir. Hareketle açılıyorsa doktora danışın."
+    },
+    {
+      "symptoms": ["bel ağrısı"],
+      "risk": "Low",
+      "advice": "Kas spazmı olabilir. Ağır kaldırmayın, sert yatakta yatın."
+    },
+    {
+      "symptoms": ["bel ağrısı", "idrar kaçırma"],
+      "risk": "High",
+      "advice": "Cauda Equina sendromu (sinir sıkışması) olabilir. Acil ameliyat gerekebilir."
+    },
+    {
+      "symptoms": ["boyun ağrısı"],
+      "risk": "Low",
+      "advice": "Duruş bozukluğu veya yastık kaynaklı olabilir. Egzersiz yapın."
+    },
+    {
+      "symptoms": ["boyun ağrısı", "kola yayılan uyuşma"],
+      "risk": "Medium",
+      "advice": "Boyun fıtığı olabilir. Fizik tedavi veya beyin cerrahisi görüşü alın."
+    },
+    {
+      "symptoms": ["kas güçsüzlüğü"],
+      "risk": "Medium",
+      "advice": "Vitamin eksikliği veya nörolojik sorun olabilir. Kan tahlili yaptırın."
+    },
+    {
+      "symptoms": ["kas krampları"],
+      "risk": "Low",
+      "advice": "Magnezyum eksikliği veya susuzluktan olabilir. Mineral takviyesi ve su alın."
+    },
+    {
+      "symptoms": ["yorgunluk (kronik)"],
+      "risk": "Medium",
+      "advice": "Anemi, tiroid veya depresyon olabilir. Dahiliye uzmanına görünün."
+    },
+    {
+      "symptoms": ["aşırı terleme (gece)"],
+      "risk": "Medium",
+      "advice": "Enfeksiyon, lenfoma veya menopoz belirtisi olabilir. Araştırılmalıdır."
+    },
+    {
+      "symptoms": ["kilo kaybı (istemsiz)"],
+      "risk": "High",
+      "advice": "Kanser, diyabet veya hipertiroidi belirtisi olabilir. Detaylı tetkik gerekir."
+    },
+    {
+      "symptoms": ["iştahsızlık"],
+      "risk": "Low",
+      "advice": "Stres veya viral hastalık kaynaklı olabilir. Geçici ise sorun yok."
+    },
+    {
+      "symptoms": ["ciltte döküntü"],
+      "risk": "Low",
+      "advice": "Alerji veya isilik olabilir. Nemlendirici sürün, kaşımayın."
+    },
+    {
+      "symptoms": ["ciltte döküntü", "ateş"],
+      "risk": "Medium",
+      "advice": "Kızamık, su çiçeği veya enfeksiyon olabilir. Doktora görünün."
+    },
+    {
+      "symptoms": ["ciltte solukluk"],
+      "risk": "Low",
+      "advice": "Demir eksikliği anemisi olabilir. Kan sayımı yaptırın."
+    },
+    {
+      "symptoms": ["ciltte sararma"],
+      "risk": "High",
+      "advice": "Sarılık (hepatit) veya safra yolu tıkanıklığı olabilir. Karaciğer enzimlerine bakılmalı."
+    },
+    {
+      "symptoms": ["vücutta morarma (kendiliğinden)"],
+      "risk": "High",
+      "advice": "Trombosit düşüklüğü veya kan hastalığı olabilir. Hematolojiye gidin."
+    },
+    {
+      "symptoms": ["benlerde şekil değişikliği"],
+      "risk": "High",
+      "advice": "Melanom (cilt kanseri) riski. Cildiyeye (dermatoloji) gösterin."
+    },
+    {
+      "symptoms": ["saç dökülmesi"],
+      "risk": "Low",
+      "advice": "Mevsimsel, stres veya demir eksikliği olabilir. Dermatoloğa danışın."
+    },
+    {
+      "symptoms": ["tırnaklarda kırılma"],
+      "risk": "Low",
+      "advice": "Vitamin eksikliği (Biotin, Çinko) olabilir. Beslenmeyi düzeltin."
+    },
+    {
+      "symptoms": ["unutkanlık"],
+      "risk": "Low",
+      "advice": "Stres, B12 eksikliği veya uykusuzluktan olabilir."
+    },
+    {
+      "symptoms": ["unutkanlık (günlük yaşamı etkileyen)"],
+      "risk": "High",
+      "advice": "Alzheimer veya demans başlangıcı olabilir. Nörolojiye başvurun."
+    },
+    {
+      "symptoms": ["el titremesi"],
+      "risk": "Medium",
+      "advice": "Parkinson, tiroid veya esansiyel tremor olabilir. Nöroloji değerlendirmeli."
+    },
+    {
+      "symptoms": ["uyuşma (el ve ayaklarda)"],
+      "risk": "Medium",
+      "advice": "Diyabetik nöropati veya sinir sıkışması olabilir."
+    },
+    {
+      "symptoms": ["uykusuzluk"],
+      "risk": "Low",
+      "advice": "Kafeini azaltın, uyku hijyenine dikkat edin."
+    },
+    {
+      "symptoms": ["aşırı uyku hali"],
+      "risk": "Medium",
+      "advice": "Uyku apnesi veya depresyon olabilir. Uyku testi gerekebilir."
+    },
+    {
+      "symptoms": ["anksiyete (kaygı)"],
+      "risk": "Low",
+      "advice": "Nefes egzersizleri yapın. Günlük hayatı etkiliyorsa psikolog desteği alın."
+    },
+    {
+      "symptoms": ["depresif ruh hali", "intihar düşüncesi"],
+      "risk": "High",
+      "advice": "Acil psikiyatrik destek gereklidir. Bir yakınınızdan veya 112'den yardım isteyin."
+    },
+    {
+      "symptoms": ["sinirlilik (ani parlamalar)"],
+      "risk": "Medium",
+      "advice": "Tiroid bozukluğu veya duygudurum bozukluğu olabilir."
+    },
+    {
+      "symptoms": ["üşüme, titreme"],
+      "risk": "Low",
+      "advice": "Ateş yükseliyor olabilir veya ortam soğuktur. Vücut ısısını takip edin."
+    },
+    {
+      "symptoms": ["ateş (3 günden uzun)"],
+      "risk": "Medium",
+      "advice": "Vücutta odaklanmış bir enfeksiyon olabilir. Doktora gidin."
+    },
+    {
+      "symptoms": ["bacakta şişlik (tek taraflı)"],
+      "risk": "High",
+      "advice": "Derin ven trombozu (DVT) riski. Pıhtı atabilir, acile gidin."
+    },
+    {
+      "symptoms": ["ayak bileği ödemi"],
+      "risk": "Medium",
+      "advice": "Kalp yetmezliği, böbrek sorunu veya ilaç yan etkisi olabilir. Tuz tüketimini azaltın."
+    },
+    {
+      "symptoms": ["yutma güçlüğü"],
+      "risk": "Medium",
+      "advice": "Yemek borusu sorunları veya nörolojik bir durum olabilir. Gastroenterojiye gidin."
+    },
+    {
+      "symptoms": ["hıçkırık (uzun süren)"],
+      "risk": "Medium",
+      "advice": "Reflü, sinir irritasyonu veya metabolik sorun olabilir. 48 saati geçerse doktora gidin."
+    },
+    {
+      "symptoms": ["meme ağrısı"],
+      "risk": "Low",
+      "advice": "Hormonal döngüye bağlı olabilir. Kafeini azaltın."
+    },
+    {
+      "symptoms": ["memede ele gelen kitle"],
+      "risk": "High",
+      "advice": "Kist veya tümör olabilir. Genel cerrahi muayenesi ve mamografi/ultrason şarttır."
+    },
+    {
+      "symptoms": ["meme başı akıntısı"],
+      "risk": "Medium",
+      "advice": "Hormonal veya enfeksiyon kaynaklı olabilir. Kanlı ise risk yüksektir."
+    },
+    {
+      "symptoms": ["makatta ağrı"],
+      "risk": "Medium",
+      "advice": "Anal fissür, abse veya hemoroid trombozu olabilir. Genel cerrahiye görünün."
+    },
+    {
+      "symptoms": ["makatta kaşıntı"],
+      "risk": "Low",
+      "advice": "Parazit veya egzama olabilir. Hijyene dikkat edin."
+    },
+    {
+      "symptoms": ["genital siğil"],
+      "risk": "Medium",
+      "advice": "HPV enfeksiyonudur. Bulaşıcıdır, tedavi edilmelidir."
+    },
+    {
+      "symptoms": ["genital uçuk"],
+      "risk": "Medium",
+      "advice": "Herpes virüsüdür. Ağrılı olabilir, antiviral tedavi gerekir."
+    },
+    {
+      "symptoms": ["kasık ağrısı"],
+      "risk": "Medium",
+      "advice": "Kas zorlanması, fıtık veya lenf bezi şişmesi olabilir."
+    },
+    {
+      "symptoms": ["koltuk altı şişliği"],
+      "risk": "Medium",
+      "advice": "Lenf bezi büyümesi (enfeksiyon veya diğer nedenler). Takip edilmeli."
+    },
+    {
+      "symptoms": ["tırnak batması"],
+      "risk": "Low",
+      "advice": "Enfekte olursa antibiyotik gerekebilir. Rahat ayakkabı giyin."
+    },
+    {
+      "symptoms": ["topuk ağrısı (sabahları)"],
+      "risk": "Low",
+      "advice": "Topuk dikeni veya plantar fasiit olabilir. Tabanlık kullanın."
+    },
+    {
+      "symptoms": ["el bileği ağrısı"],
+      "risk": "Low",
+      "advice": "Karpal tünel veya zorlanma olabilir. Atel kullanın."
+    },
+    {
+      "symptoms": ["dirsek ağrısı"],
+      "risk": "Low",
+      "advice": "Tenisçi dirseği olabilir. Zorlamayın, buz uygulayın."
+    },
+    {
+      "symptoms": ["omuz ağrısı (hareket kısıtlılığı)"],
+      "risk": "Medium",
+      "advice": "Donuk omuz veya kas yırtığı olabilir. Fizik tedavi gerekebilir."
+    },
+    {
+      "symptoms": ["çene ağrısı", "klik sesi"],
+      "risk": "Low",
+      "advice": "Çene eklemi problemi veya diş sıkma olabilir. Gece plağı gerekebilir."
+    },
+    {
+      "symptoms": ["diş eti kanaması"],
+      "risk": "Low",
+      "advice": "Gingivitis veya sert fırçalama. Ağız hijyenine dikkat edin."
+    },
+    {
+      "symptoms": ["ağız yaraları (aft)"],
+      "risk": "Low",
+      "advice": "Vitamin eksikliği veya stres. Tuzlu su gargarası yapın."
+    },
+    {
+      "symptoms": ["dil rengi değişikliği"],
+      "risk": "Low",
+      "advice": "Mantar veya vitamin eksikliği olabilir. Doktora danışın."
+    },
+    {
+      "symptoms": ["nefes kokusu (aseton gibi)"],
+      "risk": "High",
+      "advice": "Diyabetik ketoasidoz (şeker koması) riski. Acil durumdur."
+    },
+    {
+      "symptoms": ["göz kapağı düşüklüğü"],
+      "risk": "Medium",
+      "advice": "Nörolojik (Myastenia vb.) sorun olabilir. Göz ve nöroloji görmeli."
+    },
+    {
+      "symptoms": ["bebeklerde sürekli ağlama"],
+      "risk": "Medium",
+      "advice": "Kolik, enfeksiyon veya travma olabilir. Ateş yoksa gazını çıkarın, susmazsa doktora gidin."
+    },
+    {
+      "symptoms": ["bebeklerde bıngıldak çökmesi"],
+      "risk": "High",
+      "advice": "Ciddi sıvı kaybı (dehidrasyon) belirtisidir. Acilen sıvı tedavisi gerekir."
+    },
+    {
+      "symptoms": ["çocuklarda döküntü ve ateş"],
+      "risk": "Medium",
+      "advice": "Kızıl, 6. hastalık vb. olabilir. Çocuk doktoruna götürün."
+    },
+    {
+      "symptoms": ["güneş çarpması"],
+      "risk": "High",
+      "advice": "Yüksek ateş, bilinç bulanıklığı varsa acile gidin. Soğuk kompres yapın."
+    },
+    {
+      "symptoms": ["böcek ısırığı", "şişlik"],
+      "risk": "Low",
+      "advice": "Alerjik reaksiyon yoksa soğuk uygulayın. Nefes darlığı olursa acile gidin."
+    },
+    {
+      "symptoms": ["arı sokması"],
+      "risk": "Low",
+      "advice": "İğneyi çıkarın, buz koyun. Alerjiniz varsa EpiPen kullanın."
+    },
+    {
+      "symptoms": ["kene yapışması"],
+      "risk": "High",
+      "advice": "Kırım Kongo riski. Kendiniz çıkarmayın, en yakın sağlık kuruluşuna gidin."
+    },
+    {
+      "symptoms": ["köpek/kedi ısırması"],
+      "risk": "High",
+      "advice": "Kuduz ve enfeksiyon riski. Aşı takvimi için hastaneye gidin."
+    },
+    {
+      "symptoms": ["yanık (su toplayan)"],
+      "risk": "Medium",
+      "advice": "2. derece yanıktır. Patlatmayın, steril kapatın ve doktora gidin."
+    },
+    {
+      "symptoms": ["elektrik çarpması"],
+      "risk": "High",
+      "advice": "İç organ hasarı veya ritim bozukluğu yapabilir. İyi hissetseniz bile acile gidin."
+    },
+    {
+      "symptoms": ["kimyasal madde teması (göz/cilt)"],
+      "risk": "High",
+      "advice": "Bol su ile en az 20 dk yıkayın ve hastaneye gidin."
+    },
+    {
+      "symptoms": ["ilaç zehirlenmesi şüphesi"],
+      "risk": "High",
+      "advice": "Kusturmayın. 114 Zehir Danışma'yı veya 112'yi arayın."
+    },
+    {
+      "symptoms": ["mantar zehirlenmesi şüphesi"],
+      "risk": "High",
+      "advice": "Yabani mantar yediyseniz ve bulantı varsa acilen hastaneye gidin. Ölümcül olabilir."
+    },
+    {
+      "symptoms": ["soğuk ısırması (donma)"],
+      "risk": "High",
+      "advice": "Hissizleşen bölgeyi ılık (sıcak değil) suyla ısıtın. Doktora gidin."
+    },
+    {
+      "symptoms": ["yabancı cisim yutma"],
+      "risk": "High",
+      "advice": "Nefes borusunu tıkama veya organ delme riski. Acile başvurun."
+    },
+    {
+      "symptoms": ["buruna yabancı cisim kaçması"],
+      "risk": "Medium",
+      "advice": "Çıkarmaya çalışırken daha ileri itmeyin. KBB uzmanı çıkarmalıdır."
+    },
+    {
+      "symptoms": ["göze yabancı cisim kaçması"],
+      "risk": "Medium",
+      "advice": "Ovuşturmayın. Bol suyla yıkayın, çıkmazsa doktora gidin."
+    },
+    {
+      "symptoms": ["hareket hastalığı (araç tutması)"],
+      "risk": "Low",
+      "advice": "Ufka bakın, temiz hava alın. Ön koltukta oturun."
+    },
+    {
+      "symptoms": ["jet lag"],
+      "risk": "Low",
+      "advice": "Gittiğiniz yerin saatine uyun, bol su için."
+    },
+    {
+      "symptoms": ["aşırı gaz sancısı"],
+      "risk": "Low",
+      "advice": "Hareket edin, sıcak su torbası koyun. Rezene çayı içebilirsiniz."
+    },
+    {
+      "symptoms": ["halsizlik", "soluk cilt"],
+      "risk": "Medium",
+      "advice": "Kansızlık (anemi) olabilir. Kan değerlerinize baktırın."
+    },
+    {
+      "symptoms": ["gece körlüğü"],
+      "risk": "Medium",
+      "advice": "A vitamini eksikliği veya genetik göz hastalığı olabilir."
+    },
+    {
+      "symptoms": ["kuru göz"],
+      "risk": "Low",
+      "advice": "Suni gözyaşı damlası kullanın, ekran süresini azaltın."
+    },
+    {
+      "symptoms": ["kuru ağız"],
+      "risk": "Low",
+      "advice": "Sıvı alımını artırın. Diyabet veya ilaç yan etkisi de olabilir."
+    },
+    {
+      "symptoms": ["dudak çatlaması"],
+      "risk": "Low",
+      "advice": "Nemlendirici kullanın, B vitamini eksikliği olabilir."
+    },
+    {
+      "symptoms": ["diş gıcırdatma (bruksizm)"],
+      "risk": "Low",
+      "advice": "Stres kaynaklı olabilir. Diş hekiminden koruyucu plak isteyin."
+    },
+    {
+      "symptoms": ["horlama"],
+      "risk": "Low",
+      "advice": "Kilo verin, yan yatın. Nefes duruyorsa (apne) doktora gidin."
+    },
+    {
+      "symptoms": ["bacaklarda huzursuzluk (gece)"],
+      "risk": "Low",
+      "advice": "Huzursuz bacak sendromu. Demir eksikliği bakılmalı."
+    }
+  ]
+}

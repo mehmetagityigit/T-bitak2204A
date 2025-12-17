@@ -1,7 +1,7 @@
-
 import { UserProfile, DailyLog } from '../types';
-import { PYTHON_API_URL } from './config';
+import rulesData from './rules.json'; // JSON dosyasını import ediyoruz
 
+// --- HELPER FUNCTIONS FOR CALCULATIONS (Existing) ---
 export const getBMICategory = (bmi: number): string => {
   if (bmi < 18.5) return "Zayıf";
   if (bmi < 24.9) return "Normal Kilolu";
@@ -9,19 +9,13 @@ export const getBMICategory = (bmi: number): string => {
   return "Obezite";
 };
 
-/**
- * Calculates Basal Metabolic Rate (BMR) using Mifflin-St Jeor Equation
- */
 export const calculateBMR = (
   weight: number,
   height: number,
   age: number,
   gender: 'male' | 'female' | 'other'
 ): number => {
-  // Men: 10W + 6.25H - 5A + 5
-  // Women: 10W + 6.25H - 5A - 161
   let bmr = (10 * weight) + (6.25 * height) - (5 * age);
-  
   if (gender === 'male') {
     bmr += 5;
   } else {
@@ -38,7 +32,6 @@ export const calculateBodyFat = (
   hip: number = 0
 ): number => {
   if (waist === 0 || neck === 0 || height === 0) return 0;
-  
   if (gender === 'female') {
     if (hip === 0) return 0;
     const result = 163.205 * Math.log10(waist + hip - neck) - 97.684 * Math.log10(height) - 78.387;
@@ -84,118 +77,175 @@ export const SPORTS_MET_VALUES: {[key: string]: number} = {
   "Dans": 5.0
 };
 
-export const getImmunityDescription = (score: number): { title: string, desc: string, color: string } => {
-  if (score >= 80) {
-    return {
-      title: "Mükemmel Direnç",
-      desc: "Bağışıklık sistemin şu an çok güçlü. Vücudun virüslere ve bakterilere karşı tam koruma modunda. Hasta olma ihtimalin çok düşük.",
-      color: "text-green-600"
-    };
-  } else if (score >= 50) {
-    return {
-      title: "Dengeli",
-      desc: "Bağışıklığın normal seviyede ancak stres veya uykusuzluk seni hızlıca düşürebilir. Mevsim geçişlerinde dikkatli olmalısın.",
-      color: "text-yellow-600"
-    };
-  } else {
-    return {
-      title: "Riskli Seviye",
-      desc: "Vücut direncin şu an düşük. Bu durum, sık sık hasta olmana, yorgun hissetmene ve iyileşme sürecinin uzamasına neden olabilir. Acilen dinlenmeye ihtiyacın var.",
-      color: "text-red-600"
-    };
-  }
-};
-
 export const generateDailyFeedback = (log: DailyLog, profile: UserProfile): string => {
-  // Enhanced Report Generation with Storytelling
-  
   const intro = `Merhaba ${profile.name}, bugünkü verilerini detaylıca inceledim.`;
-  
-  // 1. Mood & Stress Context
   let moodSection = "";
   if (log.mood) {
     const moodMap: any = { happy: 'mutlu', energetic: 'enerjik', tired: 'yorgun', sad: 'üzgün', anxious: 'kaygılı', neutral: 'normal' };
     moodSection = `Bugün kendini **${moodMap[log.mood]}** hissediyorsun. `;
-    if (log.mood === 'anxious' || log.mood === 'tired') {
-       if (log.stressLevel > 6) moodSection += "Stres seviyenin yüksek olması bu hissi tetikliyor olabilir. ";
-       else moodSection += "Stresin düşük olsa da belki fiziksel yorgunluk seni etkiliyor. ";
-    }
   }
 
-  // 2. Day Type Context
-  let daySection = "";
-  if (log.dayType === 'exam') {
-    daySection = "Bugün bir **sınav günüydü**, bu yüzden stres seviyendeki artışlar çok normal. Vücudun 'savaş ya da kaç' modunda çalıştı. Şimdi dinlenme zamanı.";
-  } else if (log.dayType === 'sick') {
-    daySection = "Bugün **hasta** olduğunu belirttin. Geçmiş olsun! Şu an en önemli şey uyku ve sıvı tüketimi.";
-  } else if (log.dayType === 'weekend') {
-    daySection = "Hafta sonunun tadını çıkarıyorsun. ";
-  }
-
-  // 3. Screen Time Warning
   let screenSection = "";
   if (log.screenTime && log.screenTime > 6) {
-    screenSection = `⚠️ **DİKKAT:** Ekran süren ${log.screenTime} saat ile oldukça yüksek. Bu durum 'dijital göz yorgunluğu'na ve uyku kalitesinde düşüşe yol açabilir. Yatmadan 1 saat önce mavi ışıktan uzak durmalısın.`;
-  } else if (log.screenTime && log.screenTime > 3) {
+    screenSection = `⚠️ **DİKKAT:** Ekran süren ${log.screenTime} saat ile oldukça yüksek.`;
+  } else {
     screenSection = "Ekran süren makul seviyede.";
   }
 
-  // 4. Physical Analysis
   let physicalSection = "";
-  if (log.sleepHours < 6.5) physicalSection += "Uyku süren biyolojik yenilenme için yetersiz kalmış. ";
-  else physicalSection += "Uyku süren ideal aralıkta, bu bağışıklığını destekliyor. ";
+  if (log.sleepHours < 6.5) physicalSection += "Uyku süren yetersiz kalmış. ";
+  else physicalSection += "Uyku süren ideal aralıkta. ";
   
-  if (log.waterIntake < 2) physicalSection += "Ancak su tüketimin hedefin altında kalmış, baş ağrısı yaşamamak için 2 bardağa daha ihtiyacın var.";
-  else physicalSection += "Hidrasyon seviyen harika.";
-
-  // 5. Final Advice
-  let advice = "";
-  if (log.dayType === 'exam' || log.stressLevel > 7) {
-    advice = "🧘‍♂️ **ÖNERİ:** Bugün zihnin çok yoruldu. Uyumadan önce ılık bir duş al ve 10 dakika telefonsuz zaman geçir.";
-  } else if (log.nutritionScore > 7 && log.sleepHours > 7) {
-    advice = "💪 **ÖNERİ:** Vücudun şu an çok dirençli! Yarın için zorlu hedefler koyabilirsin.";
-  } else {
-    advice = "💤 **ÖNERİ:** Vücudunu dinlendirmek için bu akşam erken uyu.";
-  }
-
   return `
   ${intro}
-  
-  ${moodSection} ${daySection}
-  
+  ${moodSection}
   📱 **DİJİTAL DENGE:** ${screenSection}
-  
   🧪 **FİZİKSEL DURUM:** ${physicalSection}
-  
-  ${advice}
   `.trim();
 };
 
-export const processOfflineQuery = async (query: string, profile: UserProfile): Promise<string> => {
-  try {
-    const payload = {
-      query: query,
-      profile: profile,
-      timestamp: new Date().toISOString()
-    };
+// --- OFFLINE RULE ENGINE LOGIC (FUZZY MATCHING) ---
 
-    const response = await fetch(PYTHON_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    });
+export interface OfflineResponse {
+  response: string;
+  risk: 'Low' | 'Medium' | 'High';
+  doctorNote?: string;
+  disease?: string;
+}
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+interface HealthRule {
+  symptoms: string[];
+  risk: string;
+  advice: string;
+  disease?: string;
+}
+
+// Levenshtein Distance Algorithm: Calculates the minimum number of single-character edits needed to change one word into another.
+function levenshteinDistance(a: string, b: string): number {
+  const matrix = [];
+  let i, j;
+
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+
+  for (i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+
+  for (j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (i = 1; i <= b.length; i++) {
+    for (j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // substitution
+          Math.min(
+            matrix[i][j - 1] + 1, // insertion
+            matrix[i - 1][j] + 1 // deletion
+          )
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
+// Calculates a similarity score (0 to 1) between two phrases based on word matching.
+function calculatePhraseSimilarity(userQuery: string, symptom: string): number {
+  const queryWords = userQuery.toLowerCase().split(/\s+/).filter(w => w.length > 2); // Filter short words
+  const symptomWords = symptom.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+
+  if (symptomWords.length === 0 || queryWords.length === 0) return 0;
+
+  let totalMaxScore = 0;
+
+  // For each word in the symptom, find the best matching word in the user query
+  for (const sWord of symptomWords) {
+    let maxWordScore = 0;
+    for (const qWord of queryWords) {
+      // 1. Check for exact containment (substring)
+      if (qWord.includes(sWord) || sWord.includes(qWord)) {
+        maxWordScore = Math.max(maxWordScore, 0.9); // High score for substring match
+      } else {
+        // 2. Fuzzy match using Levenshtein
+        const dist = levenshteinDistance(sWord, qWord);
+        const maxLength = Math.max(sWord.length, qWord.length);
+        const similarity = 1 - (dist / maxLength);
+        
+        if (similarity > maxWordScore) {
+          maxWordScore = similarity;
+        }
+      }
+    }
+    totalMaxScore += maxWordScore;
+  }
+
+  // Average score across all symptom words
+  return totalMaxScore / symptomWords.length;
+}
+
+export const processOfflineQuery = async (query: string, profile: UserProfile): Promise<OfflineResponse> => {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 600));
+
+  let bestRule: HealthRule | null = null;
+  let bestScore = 0;
+
+  // Threshold for accepting a match (0.0 - 1.0)
+  // 0.45 tolerates differences like "cildim" vs "ciltte" quite well combined with containment logic
+  const THRESHOLD = 0.45; 
+
+  const allRules = rulesData.rules as HealthRule[];
+
+  for (const rule of allRules) {
+    // Check each symptom in the rule against the user query
+    for (const symptom of rule.symptoms) {
+      const score = calculatePhraseSimilarity(query, symptom);
+      
+      if (score > bestScore) {
+        bestScore = score;
+        bestRule = rule;
+      }
+    }
+  }
+
+  console.log(`Query: "${query}" -> Best Match: "${bestRule?.symptoms[0]}" with Score: ${bestScore.toFixed(2)}`);
+
+  if (bestRule && bestScore > THRESHOLD) {
+    let doctorNote = undefined;
+    const riskLevel = bestRule.risk as 'Low' | 'Medium' | 'High';
+    
+    // Generate a doctor note for Medium/High risks
+    if (riskLevel === 'Medium' || riskLevel === 'High') {
+      doctorNote = `
+TARİH: ${new Date().toLocaleDateString('tr-TR')}
+HASTA: ${profile.name} (${profile.age} Yaş, ${profile.gender})
+ŞİKAYET: "${query}"
+
+ÖN DEĞERLENDİRME (Yerel Algoritma):
+Tespit Edilen Belirti: ${bestRule.symptoms.join(', ')} (Benzerlik: %${(bestScore * 100).toFixed(0)})
+Risk Seviyesi: ${riskLevel}
+
+NOT: Hasta yukarıdaki şikayetlerle başvurmuştur. Klinik değerlendirme önerilir.
+      `.trim();
     }
 
-    const data = await response.json();
-    return data.response || "Python API boş bir cevap döndürdü.";
-
-  } catch (error) {
-    console.error("Python API Connection Error:", error);
-    return `⚠️ HATA: Python Kural Motoruna (${PYTHON_API_URL}) bağlanılamadı.\n\nEğer Vercel üzerindeydeniz, Python API'nin HTTPS destekli bir sunucuda olduğundan emin olun. (Hata: ${error})`;
+    return {
+      response: bestRule.advice,
+      risk: riskLevel,
+      disease: bestRule.disease, // Some rules might have this field
+      doctorNote: doctorNote
+    };
   }
+
+  // Fallback if no match found
+  return {
+    response: "Bu şikayeti çevrimdışı veritabanımda tam eşleştiremedim. Ancak genel sağlık için bol su içmeni, dinlenmeni ve şikayetin devam ederse bir uzmana görünmeni öneririm. İnternetin olduğunda 'Online Mod' ile yapay zekaya daha detaylı sorabilirsin.",
+    risk: "Low"
+  };
 };

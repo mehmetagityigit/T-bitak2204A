@@ -14,13 +14,15 @@ import { PerformancePage } from './components/PerformancePage';
 import { Navigation } from './components/Navigation';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
-import { UserProfile, INITIAL_PROFILE, DailyLog } from './types';
-import { Loader2 } from 'lucide-react';
+import { UserProfile, INITIAL_PROFILE, DailyLog, SymptomLog } from './types';
+import { Loader2, Wifi } from 'lucide-react';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
   // --- GLOBAL BLUETOOTH STATE ---
   const [liveHeartRate, setLiveHeartRate] = useState<number>(0);
@@ -70,6 +72,55 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [profile?.preferences?.theme]);
+
+  // --- OFFLINE SYNC LOGIC ---
+  useEffect(() => {
+    const handleStatusChange = () => {
+      setIsOnline(navigator.onLine);
+      if (navigator.onLine && profile) {
+         syncOfflineData(profile);
+      }
+    };
+
+    window.addEventListener('online', handleStatusChange);
+    window.addEventListener('offline', handleStatusChange);
+
+    return () => {
+      window.removeEventListener('online', handleStatusChange);
+      window.removeEventListener('offline', handleStatusChange);
+    };
+  }, [profile]);
+
+  const syncOfflineData = async (currentProfile: UserProfile) => {
+     const offlineDataStr = localStorage.getItem('offline_symptoms');
+     if (!offlineDataStr) return;
+
+     const offlineItems = JSON.parse(offlineDataStr);
+     if (offlineItems.length === 0) return;
+
+     setSyncMessage("Çevrimdışı veriler senkronize ediliyor...");
+
+     // Create new symptom logs from offline interactions
+     const newSymptoms: SymptomLog[] = offlineItems.map((item: any, idx: number) => ({
+        id: `offline-${Date.now()}-${idx}`,
+        timestamp: item.timestamp,
+        symptom: item.text,
+        notes: `Offline AI Analysis: Detected ${item.disease} (Risk: ${item.risk})`
+     }));
+
+     const updatedProfile = {
+        ...currentProfile,
+        symptomHistory: [...currentProfile.symptomHistory, ...newSymptoms]
+     };
+
+     // Update Profile
+     await handleUpdateProfile(updatedProfile);
+     
+     // Clear Storage
+     localStorage.removeItem('offline_symptoms');
+     setSyncMessage("Senkronizasyon tamamlandı!");
+     setTimeout(() => setSyncMessage(null), 3000);
+  };
 
   // --- REAL BLUETOOTH HANDLER ---
   const handleBluetoothConnect = async () => {
@@ -184,6 +235,12 @@ const App: React.FC = () => {
   return (
     <HashRouter>
       <div className="min-h-screen bg-gray-50 text-gray-900 font-sans transition-colors duration-300 dark:bg-navy-950 dark:text-gray-100">
+        {syncMessage && (
+           <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[60] bg-green-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-sm font-bold animate-in slide-in-from-top-2">
+             <Wifi size={16} /> {syncMessage}
+           </div>
+        )}
+        
         <Routes>
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
           <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
