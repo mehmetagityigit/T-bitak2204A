@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Activity, Lock, Mail, Key, ArrowLeft, CheckCircle2, HeartPulse } from 'lucide-react';
 
 export const Login: React.FC = () => {
@@ -11,7 +11,7 @@ export const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +19,7 @@ export const Login: React.FC = () => {
     setError('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      history.push('/');
+      navigate('/');
     } catch (err: any) {
       console.error(err);
       setError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
