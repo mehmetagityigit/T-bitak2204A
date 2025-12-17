@@ -1,7 +1,7 @@
+
 import { GoogleGenAI, Chat, FunctionDeclaration, Type, GenerateContentResponse } from "@google/genai";
 import { UserProfile, PerformanceLog } from "../types";
 import { getBMICategory } from "./ruleEngine";
-import { GEMINI_API_KEY } from "./config";
 
 // Helper to format history for context
 const formatHealthContext = (profile: UserProfile): string => {
@@ -60,9 +60,9 @@ const formatHealthContext = (profile: UserProfile): string => {
 // Define the Tool
 const logSymptomTool: FunctionDeclaration = {
   name: 'logSymptom',
-  description: 'Records a user symptom to their personal health memory with details like severity and duration.',
   parameters: {
     type: Type.OBJECT,
+    description: 'Records a user symptom to their personal health memory with details like severity and duration.',
     properties: {
       symptom: {
         type: Type.STRING,
@@ -82,11 +82,8 @@ const logSymptomTool: FunctionDeclaration = {
 };
 
 export const createGeminiChat = (profile: UserProfile): Chat => {
-  if (!GEMINI_API_KEY) {
-    console.error("API Key missing! Check environment variables.");
-  }
-  
-  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  // Fix: Exclusively use process.env.API_KEY and initialize GoogleGenAI directly
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const healthContext = formatHealthContext(profile);
 
   const systemInstruction = `
@@ -128,12 +125,12 @@ export const createGeminiChat = (profile: UserProfile): Chat => {
   ${healthContext}
   `;
 
+  // Fix: Use 'gemini-3-flash-preview' as recommended for basic text tasks
   return ai.chats.create({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3-flash-preview',
     config: {
       systemInstruction: systemInstruction,
       temperature: 0.85, 
-      maxOutputTokens: 2000,
       tools: [{ functionDeclarations: [logSymptomTool] }],
     },
   });
@@ -143,13 +140,12 @@ export const createGeminiChat = (profile: UserProfile): Chat => {
  * Analyzes a blood test result image and extracts values.
  */
 export const analyzeBloodResult = async (base64Image: string, mimeType: string) => {
-  if (!GEMINI_API_KEY) throw new Error("API Key Missing");
-
-  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  // Fix: Exclusively use process.env.API_KEY and initialize GoogleGenAI directly
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `
   Analyze this medical blood test report image. Extract the following values if they exist.
-  Return ONLY a JSON object. Do not include markdown formatting (like \`\`\`json).
+  Return ONLY a JSON object.
   
   Keys to extract:
   - hemoglobin (number)
@@ -167,8 +163,9 @@ export const analyzeBloodResult = async (base64Image: string, mimeType: string) 
   Only return the numeric value, strip units.
   `;
 
+  // Fix: Use 'gemini-3-flash-preview' for multimodal tasks
   const response: GenerateContentResponse = await ai.models.generateContent({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3-flash-preview',
     contents: {
       parts: [
         {
@@ -179,6 +176,9 @@ export const analyzeBloodResult = async (base64Image: string, mimeType: string) 
         },
         { text: prompt }
       ]
+    },
+    config: {
+      responseMimeType: "application/json"
     }
   });
 
@@ -197,10 +197,9 @@ export const analyzeBloodResult = async (base64Image: string, mimeType: string) 
  * Estimates calories for a given food name and amount using Gemini.
  */
 export const estimateCalories = async (foodName: string, amount: string): Promise<number | null> => {
-  if (!GEMINI_API_KEY) return null;
-  
   try {
-    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+    // Fix: Exclusively use process.env.API_KEY and initialize GoogleGenAI directly
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const prompt = `
     Sen uzman bir diyetisyensin.
     Yiyecek: "${foodName}"
@@ -212,8 +211,9 @@ export const estimateCalories = async (foodName: string, amount: string): Promis
     Eğer hesaplayamazsan "0" döndür.
     `;
 
+    // Fix: Use 'gemini-3-flash-preview' for basic text tasks
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-flash-preview',
       contents: prompt
     });
 
@@ -231,9 +231,8 @@ export const estimateCalories = async (foodName: string, amount: string): Promis
  * Analyzes athlete performance log.
  */
 export const analyzePerformance = async (log: PerformanceLog, profile: UserProfile): Promise<string> => {
-  if (!GEMINI_API_KEY) return "AI hizmetine erişilemiyor.";
-
-  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  // Fix: Exclusively use process.env.API_KEY and initialize GoogleGenAI directly
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const prompt = `
   Sen uzman bir Spor Performans Koçusun.
   Kullanıcı Adı: ${profile.name}
@@ -256,8 +255,9 @@ export const analyzePerformance = async (log: PerformanceLog, profile: UserProfi
   `;
 
   try {
+    // Fix: Use 'gemini-3-flash-preview' for general analysis tasks
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-flash-preview',
       contents: prompt
     });
     return response.text || "Antrenman kaydedildi.";

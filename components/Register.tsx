@@ -1,13 +1,14 @@
+
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import { Link, useHistory } from 'react-router-dom';
 import { UserProfile, INITIAL_PROFILE } from '../types';
-import { Activity, User, Mail, Lock, Ruler, Weight, ArrowRight } from 'lucide-react';
+import { Activity, User, Mail, Lock, Ruler, Weight, ArrowRight, Phone } from 'lucide-react';
 
 export const Register: React.FC = () => {
-  const [step, setStep] = useState(1); // Multi-step form for better UX
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [profileData, setProfileData] = useState<UserProfile>(INITIAL_PROFILE);
@@ -17,7 +18,7 @@ export const Register: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (step === 1) { setStep(2); return; } // Go to next step
+    if (step === 1) { setStep(2); return; }
 
     setLoading(true);
     setError('');
@@ -49,15 +50,12 @@ export const Register: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-white">
-      {/* LEFT SIDE - BRANDING */}
       <div className="hidden lg:flex lg:w-1/2 bg-gray-900 relative overflow-hidden items-center justify-center text-white p-12">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-teal-900 opacity-90"></div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/20 rounded-full blur-3xl"></div>
-        
         <div className="relative z-10 max-w-lg">
            <h1 className="text-5xl font-bold mb-6">Aramıza <br/><span className="text-teal-400">Katılın.</span></h1>
            <p className="text-gray-300 text-lg">SağlıkAsist ile vücudunuzun sinyallerini dinleyin. Yapay zeka destekli analizlerle daha sağlıklı bir geleceğe adım atın.</p>
-           
            <div className="mt-12 grid grid-cols-2 gap-6">
               <div className="bg-white/5 backdrop-blur border border-white/10 p-4 rounded-xl">
                  <div className="text-teal-400 font-bold text-xl mb-1">%100</div>
@@ -71,7 +69,6 @@ export const Register: React.FC = () => {
         </div>
       </div>
 
-      {/* RIGHT SIDE - FORM */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
         <div className="max-w-md w-full">
            <div className="mb-8">
@@ -94,6 +91,14 @@ export const Register: React.FC = () => {
                           <User className="absolute left-3 top-3 text-gray-400" size={18}/>
                           <input type="text" required value={profileData.name} onChange={e => updateProfile('name', e.target.value)} className="w-full pl-10 p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-teal-500" placeholder="Adınız"/>
                        </div>
+                    </div>
+                    <div>
+                       <label className="text-sm font-medium text-gray-700">Telefon Numarası (Opsiyonel)</label>
+                       <div className="relative mt-1">
+                          <Phone className="absolute left-3 top-3 text-gray-400" size={18}/>
+                          <input type="tel" value={profileData.phoneNumber || ''} onChange={e => updateProfile('phoneNumber', e.target.value)} className="w-full pl-10 p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-teal-500" placeholder="05XX XXX XX XX"/>
+                       </div>
+                       <p className="text-[10px] text-gray-400 mt-1">İlaç hatırlatmaları için SMS sistemi bu numarayı kullanacaktır.</p>
                     </div>
                     <div>
                        <label className="text-sm font-medium text-gray-700">E-posta</label>

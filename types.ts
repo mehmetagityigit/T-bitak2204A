@@ -11,25 +11,24 @@ export interface BloodValues {
   ferritin: number;
   b12: number;
   d3: number;
-  wbc: number; // White Blood Cells
+  wbc: number;
   hemoglobin: number;
   magnesium: number;
-  glucose: number; // Fasting Glucose
-  tsh: number; // Thyroid
+  glucose: number;
+  tsh: number;
   lastTestDate: string;
-  customValues: CustomBloodValue[]; // New field for user-added tests
+  customValues: CustomBloodValue[];
 }
 
 export interface SymptomLog {
   id: string;
-  timestamp: string; // ISO Date
+  timestamp: string;
   symptom: string;
-  severity?: string; // e.g., "High", "Mild", "3/10"
-  duration?: string; // e.g., "2 days"
+  severity?: string;
+  duration?: string;
   notes?: string;
 }
 
-// --- NEW DIET INTERFACES ---
 export interface Meal {
   id: string;
   name: string;
@@ -43,15 +42,25 @@ export interface DailyExercise {
   durationMinutes: number;
   caloriesBurned: number;
 }
-// ---------------------------
 
-// --- ATHLETE & PERFORMANCE INTERFACES ---
+export interface Medication {
+  id: string;
+  name: string;
+  dosage: string;
+  startDate: string;
+  endDate: string;
+  timesPerDay: number;
+  times: string[]; // Specific times array: ["08:00", "20:00"]
+  dosesTakenToday: number;
+  lastTakenDate?: string;
+}
+
 export interface PerformanceLog {
   id: string;
   date: string;
-  activityType: string; // e.g., "Koşu", "Ağırlık", "HIIT"
+  activityType: string;
   durationMinutes: number;
-  intensity: number; // 1-10 (RPE)
+  intensity: number;
   feeling: 'strong' | 'tired' | 'injured' | 'normal';
   notes: string;
   aiFeedback?: string;
@@ -60,62 +69,55 @@ export interface PerformanceLog {
 export interface AppPreferences {
   theme: 'light' | 'dark';
   isAthleteMode: boolean;
+  accessibilityMode: boolean;
 }
-// ----------------------------------------
 
 export type MoodType = 'happy' | 'neutral' | 'sad' | 'anxious' | 'tired' | 'energetic';
 export type DayType = 'school' | 'weekend' | 'exam' | 'sick' | 'holiday';
 
 export interface DailyLog {
   date: string;
-  stressLevel: number; // 1-10
-  fatigueLevel: number; // 1-10
-  nutritionScore: number; // 1-10
+  stressLevel: number;
+  fatigueLevel: number;
+  nutritionScore: number;
   sleepHours: number;
-  waterIntake: number; // Liters
+  waterIntake: number;
   symptoms: string[];
-  immunityScore: number; // Calculated
-  
-  // New Enhanced Fields
+  immunityScore: number;
   mood?: MoodType;
-  screenTime?: number; // Hours
+  screenTime?: number;
   dayType?: DayType;
   userNotes?: string;
-
-  dailyAdvice?: string; // Auto-generated detailed feedback
-  
-  // Diet Tracking
+  dailyAdvice?: string;
   meals?: Meal[];
   exercises?: DailyExercise[];
   totalCaloriesIn?: number;
-  totalCaloriesOut?: number; // Exercise + BMR (Active Energy)
+  totalCaloriesOut?: number;
 }
 
 export interface BodyMeasurements {
-  neck: number; // cm
-  waist: number; // cm
-  hip: number; // cm (only needed for female)
+  neck: number;
+  waist: number;
+  hip: number;
   bodyFatPercentage?: number;
   calculatedDate?: string;
 }
 
 export interface UserProfile {
   name: string;
+  phoneNumber?: string; // Optional Phone Number
   age: number;
   weight: number;
   height: number;
-  bmi: number; // Body Mass Index
+  bmi: number;
   gender: 'male' | 'female' | 'other';
   bloodValues: BloodValues;
   dailyLogs: DailyLog[];
   symptomHistory: SymptomLog[];
-  measurements?: BodyMeasurements; // New field for Fitness Page
-  
-  // New Preferences Field
+  measurements?: BodyMeasurements;
   preferences: AppPreferences;
   performanceLogs: PerformanceLog[];
-
-  // Device Integrations
+  medications: Medication[];
   connectedDevice?: {
     id: string;
     name: string;
@@ -155,30 +157,17 @@ export const INITIAL_PROFILE: UserProfile = {
   },
   dailyLogs: [],
   symptomHistory: [],
-  measurements: {
-    neck: 0,
-    waist: 0,
-    hip: 0
-  },
-  preferences: {
-    theme: 'light',
-    isAthleteMode: false
-  },
-  performanceLogs: []
+  measurements: { neck: 0, waist: 0, hip: 0 },
+  preferences: { theme: 'light', isAthleteMode: false, accessibilityMode: false },
+  performanceLogs: [],
+  medications: []
 };
 
-// Common Symptoms for selection - Expanded List
 export const SYMPTOMS_LIST = [
-  // Genel
   "Baş Ağrısı", "Ateş", "Halsizlik", "Yorgunluk", "Titreme", "Terleme", "Üşüme",
-  // KBB & Solunum
   "Boğaz Ağrısı", "Öksürük", "Burun Akıntısı", "Burun Tıkanıklığı", "Nefes Darlığı", "Hapşırma", "Ses Kısıklığı", "Tat/Koku Kaybı",
-  // Sindirim
   "Mide Bulantısı", "Kusma", "Karın Ağrısı", "İshal", "Kabızlık", "Mide Yanması", "İştahsızlık", "Şişkinlik",
-  // Kas & İskelet
   "Kas Ağrısı", "Eklem Ağrısı", "Bel Ağrısı", "Boyun Ağrısı", "Sırt Ağrısı", "Kramp",
-  // Nörolojik & Psikolojik
   "Baş Dönmesi", "Uykusuzluk", "Odaklanma Sorunu", "Sinirlilik", "Unutkanlık", "Göz Yorgunluğu", "Çarpıntı",
-  // Cilt
   "Cilt Döküntüsü", "Kaşıntı", "Göz Kızarıklığı"
 ];
