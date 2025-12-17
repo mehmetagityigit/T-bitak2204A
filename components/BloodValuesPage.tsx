@@ -139,36 +139,39 @@ export const BloodValuesPage: React.FC<Props> = ({ profile, onUpdate }) => {
 
       {/* AI Scan Section */}
       <div className="bg-gradient-to-r from-teal-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="relative z-10 flex flex-col items-center text-center gap-4">
           <div>
-            <h3 className="text-lg font-bold flex items-center gap-2">
+            <h3 className="text-lg font-bold flex items-center justify-center gap-2">
               <ScanLine /> Akıllı Tahlil Okuyucu
             </h3>
-            <p className="text-teal-50 text-sm mt-1">
-              Tahlil kağıdının fotoğrafını çekin, değerleri otomatik dolduralım.
+            <p className="text-teal-50 text-sm mt-1 max-w-xs mx-auto">
+              Tahlil kağıdının fotoğrafını çekin, AI değerleri otomatik doldursun.
             </p>
           </div>
           
           <button 
             onClick={triggerFileInput}
             disabled={isAnalyzing}
-            className="bg-white text-teal-700 px-6 py-3 rounded-xl font-bold shadow-md hover:bg-teal-50 transition active:scale-95 flex items-center gap-2 whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full md:w-auto bg-white text-teal-700 px-6 py-4 rounded-xl font-bold shadow-md hover:bg-teal-50 transition active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isAnalyzing ? (
               <>
-                <Loader2 className="animate-spin" size={20} /> Analiz Ediliyor...
+                <Loader2 className="animate-spin" size={24} /> Analiz Ediliyor...
               </>
             ) : (
               <>
-                <Camera size={20} /> Fotoğraf Yükle
+                <Camera size={24} /> Fotoğraf Çek / Yükle
               </>
             )}
           </button>
+          
+          {/* Important for Mobile Camera Access */}
           <input 
             type="file" 
             ref={fileInputRef} 
             onChange={handleFileUpload} 
             accept="image/*" 
+            capture="environment"
             className="hidden" 
           />
         </div>
@@ -182,166 +185,37 @@ export const BloodValuesPage: React.FC<Props> = ({ profile, onUpdate }) => {
         </div>
 
         <h3 className="font-bold text-gray-800 mb-4 border-b pb-2">Temel Kan Değerleri</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           
-          {/* Hemoglobin */}
-          <div className="space-y-2">
-            <label className="flex items-center justify-between text-gray-700 font-bold">
-              <span>Hemoglobin (HGB)</span>
-              <span className="text-xs font-normal bg-gray-100 px-2 py-1 rounded text-gray-500">Ref: 12-17 g/dL</span>
-            </label>
-            <div className="relative">
-              <input 
-                type="number" 
-                value={bloodValues.hemoglobin} 
-                onChange={(e) => handleChange('hemoglobin', e.target.value)}
-                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800 transition-colors"
-              />
-              <div className="absolute right-3 top-3 text-gray-400 text-sm">g/dL</div>
-            </div>
-            {bloodValues.hemoglobin < 12 && <p className="text-xs text-red-500 font-medium">⚠️ Kansızlık (Anemi) riski</p>}
-          </div>
+          {/* Inputs */}
+          {[
+            { key: 'hemoglobin', label: 'Hemoglobin (HGB)', unit: 'g/dL', ref: '12-17' },
+            { key: 'ferritin', label: 'Ferritin', unit: 'ng/mL', ref: '30-400' },
+            { key: 'iron', label: 'Demir', unit: 'ug/dL', ref: '60-170' },
+            { key: 'b12', label: 'B12 Vitamini', unit: 'pg/mL', ref: '200-900' },
+            { key: 'd3', label: 'D3 Vitamini', unit: 'ng/mL', ref: '30-100' },
+            { key: 'magnesium', label: 'Magnezyum', unit: 'mg/dL', ref: '1.7-2.2' },
+            { key: 'glucose', label: 'Açlık Şekeri', unit: 'mg/dL', ref: '70-100' },
+            { key: 'tsh', label: 'TSH (Tiroid)', unit: 'mIU/L', ref: '0.4-4.0' },
+            { key: 'wbc', label: 'WBC (Lökosit)', unit: 'mcL', ref: '4000-10000' },
+          ].map((item) => (
+             <div key={item.key} className="space-y-1">
+                <label className="flex items-center justify-between text-gray-700 text-sm font-bold">
+                  <span>{item.label}</span>
+                  <span className="text-[10px] font-normal bg-gray-100 px-2 py-0.5 rounded text-gray-500">Ref: {item.ref}</span>
+                </label>
+                <div className="relative">
+                  <input 
+                    type="number" inputMode="decimal"
+                    value={(bloodValues as any)[item.key]} 
+                    onChange={(e) => handleChange(item.key, e.target.value)}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none text-lg font-medium text-gray-800 bg-gray-50 focus:bg-white transition-colors"
+                  />
+                  <div className="absolute right-3 top-3.5 text-gray-400 text-xs">{item.unit}</div>
+                </div>
+             </div>
+          ))}
 
-          {/* Ferritin */}
-          <div className="space-y-2">
-            <label className="flex items-center justify-between text-gray-700 font-bold">
-              <span>Ferritin (Depo Demir)</span>
-              <span className="text-xs font-normal bg-gray-100 px-2 py-1 rounded text-gray-500">Ref: 30-400 ng/mL</span>
-            </label>
-            <div className="relative">
-              <input 
-                type="number" 
-                value={bloodValues.ferritin} 
-                onChange={(e) => handleChange('ferritin', e.target.value)}
-                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800"
-              />
-              <div className="absolute right-3 top-3 text-gray-400 text-sm">ng/mL</div>
-            </div>
-            {bloodValues.ferritin < 30 && <p className="text-xs text-red-500 font-medium">⚠️ Demir depoları düşük</p>}
-          </div>
-
-          {/* Demir */}
-          <div className="space-y-2">
-            <label className="flex items-center justify-between text-gray-700 font-bold">
-              <span>Demir (Serum Iron)</span>
-              <span className="text-xs font-normal bg-gray-100 px-2 py-1 rounded text-gray-500">Ref: 60-170 ug/dL</span>
-            </label>
-            <div className="relative">
-              <input 
-                type="number" 
-                value={bloodValues.iron} 
-                onChange={(e) => handleChange('iron', e.target.value)}
-                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800"
-              />
-              <div className="absolute right-3 top-3 text-gray-400 text-sm">ug/dL</div>
-            </div>
-            {bloodValues.iron < 60 && <p className="text-xs text-red-500 font-medium">⚠️ Referans değerin altında</p>}
-          </div>
-
-          {/* B12 */}
-          <div className="space-y-2">
-            <label className="flex items-center justify-between text-gray-700 font-bold">
-              <span>B12 Vitamini</span>
-              <span className="text-xs font-normal bg-gray-100 px-2 py-1 rounded text-gray-500">Ref: 200-900 pg/mL</span>
-            </label>
-            <div className="relative">
-              <input 
-                type="number" 
-                value={bloodValues.b12} 
-                onChange={(e) => handleChange('b12', e.target.value)}
-                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800"
-              />
-              <div className="absolute right-3 top-3 text-gray-400 text-sm">pg/mL</div>
-            </div>
-            {bloodValues.b12 < 200 && <p className="text-xs text-red-500 font-medium">⚠️ Referans değerin altında</p>}
-          </div>
-
-          {/* D3 */}
-          <div className="space-y-2">
-            <label className="flex items-center justify-between text-gray-700 font-bold">
-              <span>D3 Vitamini</span>
-              <span className="text-xs font-normal bg-gray-100 px-2 py-1 rounded text-gray-500">Ref: 30-100 ng/mL</span>
-            </label>
-            <div className="relative">
-              <input 
-                type="number" 
-                value={bloodValues.d3} 
-                onChange={(e) => handleChange('d3', e.target.value)}
-                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800"
-              />
-              <div className="absolute right-3 top-3 text-gray-400 text-sm">ng/mL</div>
-            </div>
-            {bloodValues.d3 < 30 && <p className="text-xs text-red-500 font-medium">⚠️ Referans değerin altında</p>}
-          </div>
-
-          {/* Magnesium */}
-          <div className="space-y-2">
-            <label className="flex items-center justify-between text-gray-700 font-bold">
-              <span>Magnezyum</span>
-              <span className="text-xs font-normal bg-gray-100 px-2 py-1 rounded text-gray-500">Ref: 1.7-2.2 mg/dL</span>
-            </label>
-            <div className="relative">
-              <input 
-                type="number" 
-                value={bloodValues.magnesium} 
-                onChange={(e) => handleChange('magnesium', e.target.value)}
-                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800"
-              />
-              <div className="absolute right-3 top-3 text-gray-400 text-sm">mg/dL</div>
-            </div>
-          </div>
-
-          {/* Glucose */}
-          <div className="space-y-2">
-            <label className="flex items-center justify-between text-gray-700 font-bold">
-              <span>Açlık Şekeri (Glukoz)</span>
-              <span className="text-xs font-normal bg-gray-100 px-2 py-1 rounded text-gray-500">Ref: 70-100 mg/dL</span>
-            </label>
-            <div className="relative">
-              <input 
-                type="number" 
-                value={bloodValues.glucose} 
-                onChange={(e) => handleChange('glucose', e.target.value)}
-                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800"
-              />
-              <div className="absolute right-3 top-3 text-gray-400 text-sm">mg/dL</div>
-            </div>
-          </div>
-
-           {/* TSH */}
-           <div className="space-y-2">
-            <label className="flex items-center justify-between text-gray-700 font-bold">
-              <span>TSH (Tiroid)</span>
-              <span className="text-xs font-normal bg-gray-100 px-2 py-1 rounded text-gray-500">Ref: 0.4-4.0 mIU/L</span>
-            </label>
-            <div className="relative">
-              <input 
-                type="number" 
-                value={bloodValues.tsh} 
-                onChange={(e) => handleChange('tsh', e.target.value)}
-                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800"
-              />
-              <div className="absolute right-3 top-3 text-gray-400 text-sm">mIU/L</div>
-            </div>
-          </div>
-
-          {/* WBC */}
-          <div className="space-y-2">
-            <label className="flex items-center justify-between text-gray-700 font-bold">
-              <span>WBC (Lökosit)</span>
-              <span className="text-xs font-normal bg-gray-100 px-2 py-1 rounded text-gray-500">Ref: 4000-10000</span>
-            </label>
-            <div className="relative">
-              <input 
-                type="number" 
-                value={bloodValues.wbc} 
-                onChange={(e) => handleChange('wbc', e.target.value)}
-                className="w-full p-3 border border-red-100 rounded-xl focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none text-lg font-medium text-gray-800"
-              />
-              <div className="absolute right-3 top-3 text-gray-400 text-sm">mcL</div>
-            </div>
-             {bloodValues.wbc > 10000 && <p className="text-xs text-orange-500 font-medium">⚠️ Enfeksiyon riski olabilir</p>}
-          </div>
         </div>
 
         {/* Custom Values Section */}
@@ -372,43 +246,38 @@ export const BloodValuesPage: React.FC<Props> = ({ profile, onUpdate }) => {
         {/* Add New Custom Value Form */}
         <div className="bg-teal-50 p-4 rounded-xl border border-teal-100">
           <h4 className="text-sm font-bold text-teal-800 mb-3">Yeni Tahlil Ekle</h4>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
-            <div className="md:col-span-5">
-              <input 
-                type="text" 
-                placeholder="Test Adı (Örn: Kolesterol)" 
-                value={newCustom.name}
-                onChange={e => setNewCustom({...newCustom, name: e.target.value})}
-                className="w-full p-2 border border-teal-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-300"
-              />
+          <div className="grid grid-cols-1 gap-3">
+            <input 
+              type="text" 
+              placeholder="Test Adı (Örn: Kolesterol)" 
+              value={newCustom.name}
+              onChange={e => setNewCustom({...newCustom, name: e.target.value})}
+              className="w-full p-3 border border-teal-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-300"
+            />
+            <div className="flex gap-2">
+                <input 
+                  type="number" inputMode="decimal"
+                  placeholder="Değer" 
+                  value={newCustom.value}
+                  onChange={e => setNewCustom({...newCustom, value: e.target.value})}
+                  className="w-full p-3 border border-teal-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-300"
+                />
+                <select 
+                  value={newCustom.unit}
+                  onChange={e => setNewCustom({...newCustom, unit: e.target.value})}
+                  className="w-24 p-3 border border-teal-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-300"
+                >
+                  {COMMON_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+                </select>
             </div>
-            <div className="md:col-span-3">
-              <input 
-                type="number" 
-                placeholder="Değer" 
-                value={newCustom.value}
-                onChange={e => setNewCustom({...newCustom, value: e.target.value})}
-                className="w-full p-2 border border-teal-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-300"
-              />
-            </div>
-            <div className="md:col-span-3">
-              <select 
-                value={newCustom.unit}
-                onChange={e => setNewCustom({...newCustom, unit: e.target.value})}
-                className="w-full p-2 border border-teal-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-300"
-              >
-                {COMMON_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-              </select>
-            </div>
-            <div className="md:col-span-1">
-              <button 
-                onClick={handleAddCustom}
-                disabled={!newCustom.name || !newCustom.value}
-                className="w-full h-full bg-teal-600 hover:bg-teal-700 text-white rounded-lg flex items-center justify-center disabled:opacity-50 transition"
-              >
-                <Plus size={20} />
-              </button>
-            </div>
+            
+            <button 
+              onClick={handleAddCustom}
+              disabled={!newCustom.name || !newCustom.value}
+              className="w-full p-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg flex items-center justify-center disabled:opacity-50 transition font-bold"
+            >
+              <Plus size={20} className="mr-2"/> Ekle
+            </button>
           </div>
         </div>
 
@@ -419,7 +288,7 @@ export const BloodValuesPage: React.FC<Props> = ({ profile, onUpdate }) => {
 
       <button 
         onClick={handleSave}
-        className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg transform transition active:scale-95 flex items-center justify-center gap-2"
+        className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg transform transition active:scale-95 flex items-center justify-center gap-2 mb-8"
       >
         {isSaved ? "Kaydedildi!" : (
           <>
