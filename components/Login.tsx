@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { Link, useHistory } from 'react-router-dom';
 import { Activity, Lock, Mail, Key, ArrowLeft, CheckCircle2, HeartPulse } from 'lucide-react';
@@ -17,7 +18,7 @@ export const Login: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      await auth.signInWithEmailAndPassword(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       history.push('/');
     } catch (err: any) {
       console.error(err);
@@ -32,7 +33,7 @@ export const Login: React.FC = () => {
     if (!email) { setError("Lütfen e-posta adresinizi girin."); return; }
     setLoading(true); setError(''); setSuccessMessage('');
     try {
-      await auth.sendPasswordResetEmail(email);
+      await sendPasswordResetEmail(auth, email);
       setSuccessMessage("Sıfırlama bağlantısı gönderildi.");
     } catch (err: any) {
       setError(err.message);

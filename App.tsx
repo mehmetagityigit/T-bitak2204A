@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import firebase from 'firebase/compat/app';
+import React, { useState, useEffect, useRef } from 'react';
+import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from './firebaseConfig';
 
 import { Dashboard } from './components/Dashboard';
@@ -10,7 +11,6 @@ import { ProfileConfig } from './components/ProfileConfig';
 import { BloodValuesPage } from './components/BloodValuesPage';
 import { DietPage } from './components/DietPage';
 import { PerformancePage } from './components/PerformancePage';
-import { MedicationPage } from './components/MedicationPage';
 import { Navigation } from './components/Navigation';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
@@ -18,7 +18,7 @@ import { UserProfile, INITIAL_PROFILE, DailyLog, SymptomLog } from './types';
 import { Loader2, Wifi } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [user, setUser] = useState<firebase.User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -26,19 +26,20 @@ const App: React.FC = () => {
 
   // --- GLOBAL BLUETOOTH STATE ---
   const [liveHeartRate, setLiveHeartRate] = useState<number>(0);
+  // BluetoothDevice is not a standard type in TypeScript DOM lib, using any
   const [bluetoothDevice, setBluetoothDevice] = useState<any | null>(null);
   const [isDeviceConnected, setIsDeviceConnected] = useState(false);
   
   // Monitor Auth State
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         // Fetch User Profile from Firestore
-        const docRef = db.collection("users").doc(currentUser.uid);
-        const docSnap = await docRef.get();
+        const docRef = doc(db, "users", currentUser.uid);
+        const docSnap = await getDoc(docRef);
         
-        if (docSnap.exists) {
+        if (docSnap.exists()) {
           const data = docSnap.data() as UserProfile;
           // Merge with default preferences if missing
           const safeProfile = {
@@ -46,11 +47,9 @@ const App: React.FC = () => {
              preferences: {
                 theme: 'light',
                 isAthleteMode: false,
-                accessibilityMode: false,
                 ...data.preferences
              },
-             performanceLogs: data.performanceLogs || [],
-             medications: data.medications || []
+             performanceLogs: data.performanceLogs || []
           };
           setProfile(safeProfile as UserProfile);
         } else {
@@ -206,7 +205,7 @@ const App: React.FC = () => {
     setProfile(updated);
     if (user) {
       try {
-        await db.collection("users").doc(user.uid).set(updated);
+        await setDoc(doc(db, "users", user.uid), updated);
       } catch (e) {
         console.error("Error updating profile:", e);
       }
@@ -234,35 +233,51 @@ const App: React.FC = () => {
   }
 
   return (
-    <BrowserRouter>
-      <div className={`min-h-screen font-sans transition-colors duration-300 dark:bg-navy-950 dark:text-gray-100 ${profile?.preferences?.accessibilityMode ? 'bg-white text-black text-lg' : 'bg-gray-50 text-gray-900'}`}>
+    <HashRouter>
+      <div className="min-h-screen bg-gray-50 text-gray-900 font-sans transition-colors duration-300 dark:bg-navy-950 dark:text-gray-100">
         {syncMessage && (
            <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[60] bg-green-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-sm font-bold animate-in slide-in-from-top-2">
              <Wifi size={16} /> {syncMessage}
            </div>
         )}
         
-        <Routes>
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-          <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
+        <Switch>
+          <Route path="/login">
+            {!user ? <Login /> : <Redirect to="/" />}
+          </Route>
+          <Route path="/register">
+            {!user ? <Register /> : <Redirect to="/" />}
+          </Route>
 
-          <Route path="*" element={
-            user && profile ? (
+          <Route path="/">
+            {user && profile ? (
               <>
-                <main className="md:ml-0 md:pt-16 pb-20 md:pb-0">
-                  <Routes>
-                    <Route path="/" element={<Dashboard profile={profile} liveHeartRate={liveHeartRate} isDeviceConnected={isDeviceConnected} />} />
-                    <Route path="/blood-values" element={<BloodValuesPage profile={profile} onUpdate={handleUpdateProfile} />} />
-                    <Route path="/diet" element={<DietPage profile={profile} onUpdate={handleAddLog} onUpdateProfile={handleUpdateProfile} />} />
-                    <Route path="/medications" element={<MedicationPage profile={profile} onUpdateProfile={handleUpdateProfile} />} />
-                    <Route path="/entry" element={<DailyEntry onSave={handleAddLog} profile={profile} />} />
-                    <Route path="/chat" element={<AIChat profile={profile} onUpdateProfile={handleUpdateProfile} />} />
+                <main className="md:ml-0 md:pt-16 pb-16 md:pb-0">
+                  <Switch>
+                    <Route exact path="/">
+                       <Dashboard profile={profile} liveHeartRate={liveHeartRate} isDeviceConnected={isDeviceConnected} />
+                    </Route>
+                    <Route path="/blood-values">
+                       <BloodValuesPage profile={profile} onUpdate={handleUpdateProfile} />
+                    </Route>
+                    <Route path="/diet">
+                       <DietPage profile={profile} onUpdate={handleAddLog} onUpdateProfile={handleUpdateProfile} />
+                    </Route>
+                    <Route path="/entry">
+                       <DailyEntry onSave={handleAddLog} profile={profile} />
+                    </Route>
+                    <Route path="/chat">
+                       <AIChat profile={profile} onUpdateProfile={handleUpdateProfile} />
+                    </Route>
                     
+                    {/* Conditional Performance Route */}
                     {profile.preferences?.isAthleteMode && (
-                       <Route path="/performance" element={<PerformancePage profile={profile} onUpdateProfile={handleUpdateProfile} />} />
+                       <Route path="/performance">
+                          <PerformancePage profile={profile} onUpdateProfile={handleUpdateProfile} />
+                       </Route>
                     )}
 
-                    <Route path="/profile" element={
+                    <Route path="/profile">
                         <ProfileConfig 
                           profile={profile} 
                           onUpdate={handleUpdateProfile}
@@ -270,19 +285,21 @@ const App: React.FC = () => {
                           onDisconnectBluetooth={handleBluetoothDisconnect}
                           isDeviceConnected={isDeviceConnected}
                         />
-                    } />
-                    <Route path="*" element={<Navigate to="/" />} />
-                  </Routes>
+                    </Route>
+                    <Route path="*">
+                       <Redirect to="/" />
+                    </Route>
+                  </Switch>
                 </main>
                 <Navigation profile={profile} />
               </>
             ) : (
-              <Navigate to="/login" />
-            )
-          } />
-        </Routes>
+              <Redirect to="/login" />
+            )}
+          </Route>
+        </Switch>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 

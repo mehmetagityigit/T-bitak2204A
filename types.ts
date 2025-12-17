@@ -45,17 +45,6 @@ export interface DailyExercise {
 }
 // ---------------------------
 
-// --- MEDICATION INTERFACE ---
-export interface Medication {
-  id: string;
-  name: string;
-  dosage: string; // e.g. "1 Tablet", "5mg"
-  time: string; // e.g. "09:00"
-  isTaken: boolean;
-  takenAt?: string;
-}
-// ---------------------------
-
 // --- ATHLETE & PERFORMANCE INTERFACES ---
 export interface PerformanceLog {
   id: string;
@@ -71,7 +60,6 @@ export interface PerformanceLog {
 export interface AppPreferences {
   theme: 'light' | 'dark';
   isAthleteMode: boolean;
-  accessibilityMode: boolean; // For elderly/disabled users
 }
 // ----------------------------------------
 
@@ -126,7 +114,6 @@ export interface UserProfile {
   // New Preferences Field
   preferences: AppPreferences;
   performanceLogs: PerformanceLog[];
-  medications: Medication[];
 
   // Device Integrations
   connectedDevice?: {
@@ -175,11 +162,9 @@ export const INITIAL_PROFILE: UserProfile = {
   },
   preferences: {
     theme: 'light',
-    isAthleteMode: false,
-    accessibilityMode: false
+    isAthleteMode: false
   },
-  performanceLogs: [],
-  medications: []
+  performanceLogs: []
 };
 
 // Common Symptoms for selection - Expanded List

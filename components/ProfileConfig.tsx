@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { UserProfile } from '../types';
-import { Settings, LogOut, Trash2, Edit2, Save, X, User, Moon, Sun, Dumbbell, ChevronRight, Watch, Bluetooth, Smartphone, RefreshCw, Eye } from 'lucide-react';
+import { Settings, LogOut, Trash2, Edit2, Save, X, User, Moon, Sun, Dumbbell, ChevronRight, Watch, Bluetooth, Smartphone, RefreshCw } from 'lucide-react';
 import { getBMICategory } from '../services/ruleEngine';
 import { auth, db } from '../firebaseConfig';
+import { signOut, deleteUser } from 'firebase/auth';
+import { doc, deleteDoc } from 'firebase/firestore';
 
 interface Props {
   profile: UserProfile;
@@ -41,12 +43,12 @@ export const ProfileConfig: React.FC<Props> = ({
     setIsEditing(false);
   };
 
-  const handleTogglePreference = (key: 'theme' | 'isAthleteMode' | 'accessibilityMode') => {
+  const handleTogglePreference = (key: 'theme' | 'isAthleteMode') => {
     let newVal;
     if (key === 'theme') {
       newVal = profile.preferences.theme === 'dark' ? 'light' : 'dark';
     } else {
-      newVal = !profile.preferences[key];
+      newVal = !profile.preferences.isAthleteMode;
     }
 
     onUpdate({
@@ -66,7 +68,7 @@ export const ProfileConfig: React.FC<Props> = ({
   const handleLogout = async () => {
     if (window.confirm("Çıkış yapmak istediğinize emin misiniz?")) {
       try {
-        await auth.signOut();
+        await signOut(auth);
       } catch (error) {
         console.error("Logout Error:", error);
       }
@@ -79,8 +81,8 @@ export const ProfileConfig: React.FC<Props> = ({
       try {
         const user = auth.currentUser;
         if (user) {
-          await db.collection("users").doc(user.uid).delete();
-          await user.delete();
+          await deleteDoc(doc(db, "users", user.uid));
+          await deleteUser(user);
         }
       } catch (error: any) {
         setIsDeleting(false);
@@ -190,25 +192,6 @@ export const ProfileConfig: React.FC<Props> = ({
           <div className="bg-white dark:bg-navy-800 rounded-2xl shadow-sm border border-gray-100 dark:border-navy-700 overflow-hidden">
              <h4 className="p-4 font-bold text-gray-800 dark:text-gray-200 border-b border-gray-100 dark:border-navy-700">Uygulama Ayarları</h4>
              
-             {/* Accessibility Mode Toggle */}
-             <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-navy-700 bg-yellow-50 dark:bg-yellow-900/10">
-                <div className="flex items-center gap-3">
-                   <div className="p-2 bg-yellow-200 dark:bg-yellow-900/50 rounded-lg text-yellow-700 dark:text-yellow-400">
-                      <Eye size={20} />
-                   </div>
-                   <div>
-                      <div className="font-bold text-gray-900 dark:text-white">Erişilebilirlik Modu</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Yaşlı ve engelli bireyler için büyük yazı ve kolay arayüz.</div>
-                   </div>
-                </div>
-                <button 
-                  onClick={() => handleTogglePreference('accessibilityMode')}
-                  className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${profile.preferences.accessibilityMode ? 'bg-teal-600' : 'bg-gray-300 dark:bg-gray-600'}`}
-                >
-                   <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${profile.preferences.accessibilityMode ? 'translate-x-6' : ''}`}></div>
-                </button>
-             </div>
-
              {/* Athlete Mode Toggle */}
              <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-navy-700">
                 <div className="flex items-center gap-3">

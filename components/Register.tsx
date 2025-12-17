@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import { Link, useHistory } from 'react-router-dom';
 import { UserProfile, INITIAL_PROFILE } from '../types';
@@ -24,15 +26,13 @@ export const Register: React.FC = () => {
       const heightInMeters = profileData.height / 100;
       const calculatedBMI = profileData.weight / (heightInMeters * heightInMeters);
 
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      if (user) {
-        await db.collection("users").doc(user.uid).set({
-          ...profileData,
-          bmi: Number(calculatedBMI.toFixed(2)),
-        });
-      }
+      await setDoc(doc(db, "users", user.uid), {
+        ...profileData,
+        bmi: Number(calculatedBMI.toFixed(2)),
+      });
 
       history.push('/');
     } catch (err: any) {
