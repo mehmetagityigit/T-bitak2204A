@@ -2,13 +2,16 @@
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#ffffff">
     <title>SağlıkAsist - Kişisel Sağlık Hafızası</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         darkMode: 'class', // Enable manual dark mode toggling
@@ -30,13 +33,37 @@
                 900: '#0f172a',
                 950: '#020617',
               }
+            },
+            screens: {
+              'xs': '375px',
+            },
+            padding: {
+              'safe': 'env(safe-area-inset-bottom)',
+              'safe-top': 'env(safe-area-inset-top)',
             }
           },
         },
       }
     </script>
     <style>
-      body { font-family: 'Inter', sans-serif; }
+      body { 
+        font-family: 'Inter', sans-serif;
+        /* Mobil uygulama hissi için seçim yapmayı kapat */
+        -webkit-user-select: none;
+        user-select: none;
+        /* Dokunma gecikmesini kaldır */
+        touch-action: manipulation;
+        /* Çentik (Notch) desteği */
+        padding-top: env(safe-area-inset-top);
+        background-color: #f9fafb;
+      }
+      
+      /* İnputlara yazı yazılabilmesi için seçimi aç */
+      input, textarea, [contenteditable] {
+        -webkit-user-select: text;
+        user-select: text;
+      }
+
       /* Custom Scrollbar for Chat */
       .scrollbar-hide::-webkit-scrollbar {
           display: none;
@@ -44,6 +71,11 @@
       .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
+      }
+      
+      /* Mobil tıklama efektini kaldır */
+      * {
+        -webkit-tap-highlight-color: transparent;
       }
     </style>
   <script type="importmap">
@@ -61,7 +93,7 @@
 }
 </script>
 </head>
-  <body class="bg-gray-50 text-gray-900 dark:bg-navy-950 dark:text-gray-100 transition-colors duration-300">
+  <body class="bg-gray-50 text-gray-900 dark:bg-navy-950 dark:text-gray-100 transition-colors duration-300 min-h-screen overflow-x-hidden selection:bg-teal-500 selection:text-white">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

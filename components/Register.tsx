@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { UserProfile, INITIAL_PROFILE } from '../types';
 import { Activity, User, Mail, Lock, Ruler, Weight, ArrowRight } from 'lucide-react';
 
@@ -13,7 +13,7 @@ export const Register: React.FC = () => {
   const [profileData, setProfileData] = useState<UserProfile>(INITIAL_PROFILE);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +34,7 @@ export const Register: React.FC = () => {
         bmi: Number(calculatedBMI.toFixed(2)),
       });
 
-      navigate('/');
+      history.push('/');
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') setError('Bu e-posta zaten kayıtlı.');
       else setError(err.message);

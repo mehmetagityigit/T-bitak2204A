@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from './firebaseConfig';
@@ -241,32 +241,43 @@ const App: React.FC = () => {
            </div>
         )}
         
-        <Routes>
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-          <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
+        <Switch>
+          <Route path="/login">
+            {!user ? <Login /> : <Redirect to="/" />}
+          </Route>
+          <Route path="/register">
+            {!user ? <Register /> : <Redirect to="/" />}
+          </Route>
 
-          <Route path="*" element={
-            user && profile ? (
+          <Route path="/">
+            {user && profile ? (
               <>
                 <main className="md:ml-0 md:pt-16 pb-16 md:pb-0">
-                  <Routes>
-                    <Route 
-                      path="/" 
-                      element={<Dashboard profile={profile} liveHeartRate={liveHeartRate} isDeviceConnected={isDeviceConnected} />} 
-                    />
-                    <Route path="/blood-values" element={<BloodValuesPage profile={profile} onUpdate={handleUpdateProfile} />} />
-                    <Route path="/diet" element={<DietPage profile={profile} onUpdate={handleAddLog} onUpdateProfile={handleUpdateProfile} />} />
-                    <Route path="/entry" element={<DailyEntry onSave={handleAddLog} profile={profile} />} />
-                    <Route path="/chat" element={<AIChat profile={profile} onUpdateProfile={handleUpdateProfile} />} />
+                  <Switch>
+                    <Route exact path="/">
+                       <Dashboard profile={profile} liveHeartRate={liveHeartRate} isDeviceConnected={isDeviceConnected} />
+                    </Route>
+                    <Route path="/blood-values">
+                       <BloodValuesPage profile={profile} onUpdate={handleUpdateProfile} />
+                    </Route>
+                    <Route path="/diet">
+                       <DietPage profile={profile} onUpdate={handleAddLog} onUpdateProfile={handleUpdateProfile} />
+                    </Route>
+                    <Route path="/entry">
+                       <DailyEntry onSave={handleAddLog} profile={profile} />
+                    </Route>
+                    <Route path="/chat">
+                       <AIChat profile={profile} onUpdateProfile={handleUpdateProfile} />
+                    </Route>
                     
                     {/* Conditional Performance Route */}
                     {profile.preferences?.isAthleteMode && (
-                       <Route path="/performance" element={<PerformancePage profile={profile} onUpdateProfile={handleUpdateProfile} />} />
+                       <Route path="/performance">
+                          <PerformancePage profile={profile} onUpdateProfile={handleUpdateProfile} />
+                       </Route>
                     )}
 
-                    <Route 
-                      path="/profile" 
-                      element={
+                    <Route path="/profile">
                         <ProfileConfig 
                           profile={profile} 
                           onUpdate={handleUpdateProfile}
@@ -274,18 +285,19 @@ const App: React.FC = () => {
                           onDisconnectBluetooth={handleBluetoothDisconnect}
                           isDeviceConnected={isDeviceConnected}
                         />
-                      } 
-                    />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
+                    </Route>
+                    <Route path="*">
+                       <Redirect to="/" />
+                    </Route>
+                  </Switch>
                 </main>
                 <Navigation profile={profile} />
               </>
             ) : (
-              <Navigate to="/login" replace />
-            )
-          } />
-        </Routes>
+              <Redirect to="/login" />
+            )}
+          </Route>
+        </Switch>
       </div>
     </HashRouter>
   );
