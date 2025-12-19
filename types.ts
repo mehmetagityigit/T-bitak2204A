@@ -1,4 +1,5 @@
 
+
 export interface CustomBloodValue {
   id: string;
   name: string;
@@ -50,7 +51,7 @@ export interface Medication {
   startDate: string;
   endDate: string;
   timesPerDay: number;
-  times: string[]; // Specific times array: ["08:00", "20:00"]
+  times: string[];
   dosesTakenToday: number;
   lastTakenDate?: string;
 }
@@ -103,10 +104,28 @@ export interface BodyMeasurements {
   calculatedDate?: string;
 }
 
-export interface UserProfile {
+// FIX: Define the missing ConnectedDevice interface for Bluetooth tracking
+export interface ConnectedDevice {
+  id: string;
   name: string;
-  phoneNumber?: string; // Optional Phone Number
+  type: 'watch' | 'band' | 'other';
+  lastSync: string;
+  isConnected: boolean;
+}
+
+export interface UserProfile {
+  firstName: string;
+  lastName: string;
+  // FIX: Added age to the interface
   age: number;
+  birthDate: {
+    day: number;
+    month: number;
+    year: number;
+  };
+  bloodGroup?: string;
+  chronicIllnesses: string[];
+  phoneNumber?: string;
   weight: number;
   height: number;
   bmi: number;
@@ -118,26 +137,18 @@ export interface UserProfile {
   preferences: AppPreferences;
   performanceLogs: PerformanceLog[];
   medications: Medication[];
-  connectedDevice?: {
-    id: string;
-    name: string;
-    type: 'watch' | 'band' | 'app';
-    lastSync: string;
-    isConnected: boolean;
-  };
-}
-
-export interface ChatMessage {
-  id: string;
-  role: 'user' | 'model';
-  text: string;
-  timestamp: number;
-  isOfflineResponse?: boolean;
+  // FIX: Added connectedDevice to the interface
+  connectedDevice?: ConnectedDevice;
 }
 
 export const INITIAL_PROFILE: UserProfile = {
-  name: "Öğrenci",
-  age: 17,
+  firstName: "",
+  lastName: "",
+  // FIX: Added initial age for new profiles
+  age: 20,
+  birthDate: { day: 1, month: 1, year: 2005 },
+  bloodGroup: "A Rh+",
+  chronicIllnesses: [],
   weight: 70,
   height: 175,
   bmi: 22.8,
