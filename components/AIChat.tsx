@@ -77,6 +77,7 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
           <h2 className="font-bold dark:text-white">Sağlık Asistanı</h2>
         </div>
         <button onClick={() => setIsOfflineMode(!isOfflineMode)} className={`px-3 py-1 rounded-full text-xs font-bold ${isOfflineMode ? 'bg-orange-100 text-orange-700' : 'bg-teal-100 text-teal-700'}`}>
+          {isOfflineMode ? <Database size={14} className="inline mr-1"/> : <Wifi size={14} className="inline mr-1"/>}
           {isOfflineMode ? 'Çevrimdışı' : 'Online'}
         </button>
       </div>
@@ -85,22 +86,26 @@ export const AIChat: React.FC<Props> = ({ profile, onUpdateProfile }) => {
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`flex max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'} gap-2`}>
-              <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${msg.role === 'user' ? 'bg-teal-600 text-white' : 'bg-gray-200 dark:bg-navy-800 text-teal-600'}`}>
+              <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${msg.role === 'user' ? 'bg-teal-600 text-white shadow-md' : 'bg-white dark:bg-navy-800 text-teal-600 border dark:border-navy-700 shadow-sm'}`}>
                 {msg.role === 'user' ? <User size={16}/> : <Bot size={16}/>}
               </div>
-              <div className={`p-3 rounded-2xl text-sm shadow-sm ${msg.role === 'user' ? 'bg-teal-600 text-white' : 'bg-white dark:bg-navy-800 text-gray-800 dark:text-gray-100'}`}>
+              <div className={`p-4 rounded-3xl text-sm leading-relaxed shadow-sm ${msg.role === 'user' ? 'bg-teal-600 text-white rounded-tr-none' : 'bg-white dark:bg-navy-800 text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-navy-700 rounded-tl-none'}`}>
                 {formatText(msg.text)}
               </div>
             </div>
           </div>
         ))}
-        {isLoading && <div className="text-xs text-gray-400 animate-pulse px-4">Yazıyor...</div>}
+        {isLoading && (
+           <div className="flex gap-2 items-center text-xs text-gray-400 dark:text-gray-500 animate-pulse px-2">
+              <Sparkles size={14} className="animate-spin" /> Asistan düşünüyor...
+           </div>
+        )}
       </div>
 
       <div className="p-4 bg-white dark:bg-navy-900 border-t dark:border-navy-800 mb-16 md:mb-0">
         <div className="flex gap-2 max-w-4xl mx-auto">
-          <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()} placeholder="Sorunuzu yazın..." className="flex-1 p-3 bg-gray-100 dark:bg-navy-950 dark:text-white rounded-xl outline-none"/>
-          <button onClick={handleSend} disabled={isLoading || !input.trim()} className="p-3 bg-teal-600 text-white rounded-xl shadow-md"><Send size={20}/></button>
+          <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()} placeholder="Sorunuzu yazın..." className="flex-1 p-4 bg-gray-100 dark:bg-navy-950 dark:text-white rounded-2xl outline-none focus:ring-2 focus:ring-teal-500 transition-all"/>
+          <button onClick={handleSend} disabled={isLoading || !input.trim()} className="p-4 bg-teal-600 text-white rounded-2xl shadow-lg active:scale-95 disabled:opacity-50 transition-all"><Send size={20}/></button>
         </div>
       </div>
     </div>

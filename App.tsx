@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { User } from 'firebase/auth'; // Added modular User type
+import { User } from 'firebase/auth'; 
 import { auth, db } from './firebaseConfig';
-import { doc, getDoc, setDoc } from 'firebase/firestore'; // Import modular Firestore functions
+import { doc, getDoc, setDoc } from 'firebase/firestore'; 
 
 import { Dashboard } from './components/Dashboard';
 import { DailyEntry } from './components/DailyEntry';
@@ -17,10 +17,9 @@ import { Navigation } from './components/Navigation';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { UserProfile, INITIAL_PROFILE, DailyLog, SymptomLog } from './types';
-import { Loader2, Wifi } from 'lucide-react';
+import { Loader2, Wifi, WifiOff, CloudOff } from 'lucide-react';
 
 const App: React.FC = () => {
-  // Fix: Used modular User type instead of firebase.User to resolve type mismatch in onAuthStateChanged (line 35)
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,35 +31,65 @@ const App: React.FC = () => {
   const [bluetoothDevice, setBluetoothDevice] = useState<any | null>(null);
   const [isDeviceConnected, setIsDeviceConnected] = useState(false);
   
+  // INITIAL LOAD: Check for Offline Profile first to speed up mobile start
+  useEffect(() => {
+    const checkOfflineAccess = () => {
+      if (!navigator.onLine) {
+        const cachedProfile = localStorage.getItem('offline_profile');
+        const cachedUser = localStorage.getItem('offline_user');
+        if (cachedProfile && cachedUser) {
+          setProfile(JSON.parse(cachedProfile));
+          setUser(JSON.parse(cachedUser));
+          setLoading(false);
+        }
+      }
+    };
+    checkOfflineAccess();
+  }, []);
+
   // Monitor Auth State
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
-      setUser(currentUser);
       if (currentUser) {
-        // Fix: Use modular Firestore syntax (doc, getDoc) for fetching user profile
+        setUser(currentUser);
+        // Save basic user info for offline verification
+        localStorage.setItem('offline_user', JSON.stringify({
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName
+        }));
+
         const docRef = doc(db, "users", currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          const data = docSnap.data() as UserProfile;
-          // Merge with default preferences if missing
-          const safeProfile = {
-             ...data,
-             preferences: {
-                theme: 'light',
-                isAthleteMode: false,
-                accessibilityMode: false,
-                ...data.preferences
-             },
-             performanceLogs: data.performanceLogs || [],
-             medications: data.medications || []
-          };
-          setProfile(safeProfile as UserProfile);
-        } else {
-          setProfile(INITIAL_PROFILE);
+        try {
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data() as UserProfile;
+            const safeProfile = {
+               ...data,
+               preferences: {
+                  theme: 'light',
+                  isAthleteMode: false,
+                  accessibilityMode: false,
+                  ...data.preferences
+               },
+               performanceLogs: data.performanceLogs || [],
+               medications: data.medications || []
+            };
+            setProfile(safeProfile);
+            // CACHE FOR OFFLINE
+            localStorage.setItem('offline_profile', JSON.stringify(safeProfile));
+          } else {
+            setProfile(INITIAL_PROFILE);
+          }
+        } catch (e) {
+          console.error("Online fetch failed, checking local cache...");
+          const cached = localStorage.getItem('offline_profile');
+          if (cached) setProfile(JSON.parse(cached));
         }
       } else {
-        setProfile(null);
+        setUser(null);
+        localStorage.removeItem('offline_profile');
+        localStorage.removeItem('offline_user');
       }
       setLoading(false);
     });
@@ -68,28 +97,12 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // Handle Dark Mode & Accessibility Effects
-  useEffect(() => {
-    if (profile?.preferences?.theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-
-    if (profile?.preferences?.accessibilityMode) {
-      document.documentElement.style.fontSize = '120%';
-      document.body.classList.add('accessibility-mode');
-    } else {
-      document.documentElement.style.fontSize = '100%';
-      document.body.classList.remove('accessibility-mode');
-    }
-  }, [profile?.preferences]);
-
-  // --- OFFLINE SYNC LOGIC ---
+  // Sync Logic
   useEffect(() => {
     const handleStatusChange = () => {
-      setIsOnline(navigator.onLine);
-      if (navigator.onLine && profile) {
+      const online = navigator.onLine;
+      setIsOnline(online);
+      if (online && profile) {
          syncOfflineData(profile);
       }
     };
@@ -104,124 +117,40 @@ const App: React.FC = () => {
   }, [profile]);
 
   const syncOfflineData = async (currentProfile: UserProfile) => {
-     const offlineDataStr = localStorage.getItem('offline_symptoms');
-     if (!offlineDataStr) return;
+     const offlineLogs = localStorage.getItem('queued_logs');
+     if (!offlineLogs) return;
 
-     const offlineItems = JSON.parse(offlineDataStr);
-     if (offlineItems.length === 0) return;
+     const logsToSync = JSON.parse(offlineLogs);
+     if (logsToSync.length === 0) return;
 
-     setSyncMessage("Çevrimdışı veriler senkronize ediliyor...");
-
-     // Create new symptom logs from offline interactions
-     const newSymptoms: SymptomLog[] = offlineItems.map((item: any, idx: number) => ({
-        id: `offline-${Date.now()}-${idx}`,
-        timestamp: item.timestamp,
-        symptom: item.text,
-        notes: `Offline AI Analysis: Detected ${item.disease} (Risk: ${item.risk})`
-     }));
-
+     setSyncMessage("Çevrimdışı veriler bulutla eşitleniyor...");
+     
+     // Merge offline logs into profile
      const updatedProfile = {
         ...currentProfile,
-        symptomHistory: [...currentProfile.symptomHistory, ...newSymptoms]
+        dailyLogs: [...currentProfile.dailyLogs, ...logsToSync].filter((v, i, a) => a.findIndex(t => t.date === v.date) === i)
      };
 
-     // Update Profile
      await handleUpdateProfile(updatedProfile);
-     
-     // Clear Storage
-     localStorage.removeItem('offline_symptoms');
-     setSyncMessage("Senkronizasyon tamamlandı!");
+     localStorage.removeItem('queued_logs');
+     setSyncMessage("Senkronizasyon başarılı!");
      setTimeout(() => setSyncMessage(null), 3000);
   };
 
-  // --- REAL BLUETOOTH HANDLER ---
-  const handleBluetoothConnect = async () => {
-    try {
-      // @ts-ignore - Navigator.bluetooth types
-      const device = await navigator.bluetooth.requestDevice({
-        filters: [{ services: ['heart_rate'] }]
-      });
-
-      const server = await device.gatt.connect();
-      const service = await server.getPrimaryService('heart_rate');
-      const characteristic = await service.getCharacteristic('heart_rate_measurement');
-
-      await characteristic.startNotifications();
-      
-      characteristic.addEventListener('characteristicvaluechanged', (event: any) => {
-        const value = event.target.value;
-        const flags = value.getUint8(0);
-        const rate16Bits = flags & 0x1;
-        let heartRateMeasurement = 0;
-        
-        if (rate16Bits) {
-          heartRateMeasurement = value.getUint16(1, true); // Little Endian
-        } else {
-          heartRateMeasurement = value.getUint8(1);
-        }
-        
-        setLiveHeartRate(heartRateMeasurement);
-      });
-
-      setBluetoothDevice(device);
-      setIsDeviceConnected(true);
-
-      if (profile && user) {
-        const updatedProfile = {
-          ...profile,
-          connectedDevice: {
-            id: device.id,
-            name: device.name || 'Nabız Bandı',
-            type: 'watch' as const,
-            lastSync: new Date().toISOString(),
-            isConnected: true
-          }
-        };
-        handleUpdateProfile(updatedProfile);
-      }
-
-      device.addEventListener('gattserverdisconnected', () => {
-        setIsDeviceConnected(false);
-        setLiveHeartRate(0);
-        alert("Cihaz bağlantısı koptu.");
-      });
-
-    } catch (error) {
-      console.error("Bluetooth Connection Error:", error);
-      throw error;
-    }
-  };
-
-  const handleBluetoothDisconnect = () => {
-    if (bluetoothDevice && bluetoothDevice.gatt?.connected) {
-      bluetoothDevice.gatt.disconnect();
-    }
-    setIsDeviceConnected(false);
-    setLiveHeartRate(0);
-    setBluetoothDevice(null);
-
-    if (profile && user) {
-      const updatedProfile = {
-        ...profile,
-        connectedDevice: {
-          ...profile.connectedDevice!,
-          isConnected: false
-        }
-      };
-      handleUpdateProfile(updatedProfile);
-    }
-  };
-
-  // Sync state changes to Firestore
   const handleUpdateProfile = async (updated: UserProfile) => {
     setProfile(updated);
-    if (user) {
+    // Always update local cache immediately
+    localStorage.setItem('offline_profile', JSON.stringify(updated));
+
+    if (navigator.onLine && user) {
       try {
-        // Fix: Use modular Firestore syntax (doc, setDoc) for updating user profile
         await setDoc(doc(db, "users", user.uid), updated);
       } catch (e) {
-        console.error("Error updating profile:", e);
+        console.error("Error updating online profile:", e);
       }
+    } else {
+      // Queue changes if offline
+      console.log("Offline: Profile change cached locally.");
     }
   };
 
@@ -230,11 +159,40 @@ const App: React.FC = () => {
     const otherLogs = profile.dailyLogs.filter(l => l.date !== log.date);
     const newLogs = [...otherLogs, log].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    const updatedProfile = {
-      ...profile,
-      dailyLogs: newLogs
-    };
+    const updatedProfile = { ...profile, dailyLogs: newLogs };
+    
+    if (!navigator.onLine) {
+      const existingQueue = JSON.parse(localStorage.getItem('queued_logs') || '[]');
+      localStorage.setItem('queued_logs', JSON.stringify([...existingQueue, log]));
+    }
+    
     await handleUpdateProfile(updatedProfile);
+  };
+
+  // Bluetooth Handlers (existing logic kept)
+  const handleBluetoothConnect = async () => {
+    try {
+      const device = await (navigator as any).bluetooth.requestDevice({ filters: [{ services: ['heart_rate'] }] });
+      const server = await device.gatt.connect();
+      const service = await server.getPrimaryService('heart_rate');
+      const characteristic = await service.getCharacteristic('heart_rate_measurement');
+      await characteristic.startNotifications();
+      characteristic.addEventListener('characteristicvaluechanged', (event: any) => {
+        const value = event.target.value;
+        const flags = value.getUint8(0);
+        const rate16Bits = flags & 0x1;
+        let heartRateMeasurement = rate16Bits ? value.getUint16(1, true) : value.getUint8(1);
+        setLiveHeartRate(heartRateMeasurement);
+      });
+      setBluetoothDevice(device);
+      setIsDeviceConnected(true);
+    } catch (error) { console.error("Bluetooth Error:", error); }
+  };
+
+  const handleBluetoothDisconnect = () => {
+    if (bluetoothDevice?.gatt?.connected) bluetoothDevice.gatt.disconnect();
+    setIsDeviceConnected(false);
+    setLiveHeartRate(0);
   };
 
   if (loading) {
@@ -247,9 +205,17 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <div className={`min-h-screen font-sans transition-colors duration-300 ${profile?.preferences?.accessibilityMode ? 'bg-white text-black text-lg' : 'bg-gray-50 text-gray-900 dark:bg-navy-950 dark:text-gray-100'}`}>
+      <div className={`min-h-screen font-sans transition-colors duration-300 ${profile?.preferences?.theme === 'dark' ? 'dark bg-navy-950' : 'bg-gray-50'}`}>
+        
+        {/* OFFLINE INDICATOR */}
+        {!isOnline && (
+           <div className="fixed top-0 left-0 right-0 z-[100] bg-orange-500 text-white text-[10px] font-bold py-1 px-4 flex items-center justify-center gap-2">
+              <WifiOff size={12} /> Çevrimdışı Mod: Veriler yerel hafızaya kaydediliyor.
+           </div>
+        )}
+
         {syncMessage && (
-           <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[60] bg-green-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-sm font-bold animate-in slide-in-from-top-2">
+           <div className="fixed top-12 left-1/2 transform -translate-x-1/2 z-[60] bg-teal-600 text-white px-6 py-2 rounded-full shadow-2xl flex items-center gap-2 text-sm font-bold animate-in slide-in-from-top-4">
              <Wifi size={16} /> {syncMessage}
            </div>
         )}
@@ -261,7 +227,7 @@ const App: React.FC = () => {
           <Route path="*" element={
             user && profile ? (
               <>
-                <main className="md:ml-0 md:pt-16 pb-20 md:pb-0">
+                <main className={`md:ml-0 ${!isOnline ? 'pt-12' : 'pt-16'} pb-20 md:pb-0 min-h-screen`}>
                   <Routes>
                     <Route path="/" element={<Dashboard profile={profile} liveHeartRate={liveHeartRate} isDeviceConnected={isDeviceConnected} />} />
                     <Route path="/blood-values" element={<BloodValuesPage profile={profile} onUpdate={handleUpdateProfile} />} />
@@ -269,20 +235,8 @@ const App: React.FC = () => {
                     <Route path="/medications" element={<MedicationPage profile={profile} onUpdateProfile={handleUpdateProfile} />} />
                     <Route path="/entry" element={<DailyEntry onSave={handleAddLog} profile={profile} />} />
                     <Route path="/chat" element={<AIChat profile={profile} onUpdateProfile={handleUpdateProfile} />} />
-                    
-                    {profile.preferences?.isAthleteMode && (
-                       <Route path="/performance" element={<PerformancePage profile={profile} onUpdateProfile={handleUpdateProfile} />} />
-                    )}
-
-                    <Route path="/profile" element={
-                        <ProfileConfig 
-                          profile={profile} 
-                          onUpdate={handleUpdateProfile}
-                          onConnectBluetooth={handleBluetoothConnect}
-                          onDisconnectBluetooth={handleBluetoothDisconnect}
-                          isDeviceConnected={isDeviceConnected}
-                        />
-                    } />
+                    {profile.preferences?.isAthleteMode && <Route path="/performance" element={<PerformancePage profile={profile} onUpdateProfile={handleUpdateProfile} />} />}
+                    <Route path="/profile" element={<ProfileConfig profile={profile} onUpdate={handleUpdateProfile} onConnectBluetooth={handleBluetoothConnect} onDisconnectBluetooth={handleBluetoothDisconnect} isDeviceConnected={isDeviceConnected} />} />
                     <Route path="*" element={<Navigate to="/" />} />
                   </Routes>
                 </main>

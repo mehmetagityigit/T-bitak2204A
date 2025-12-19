@@ -5,13 +5,14 @@ import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserProfile, INITIAL_PROFILE } from '../types';
-import { Activity, User, Mail, Lock, Ruler, Weight, ArrowRight, Phone, Calendar, ShieldAlert } from 'lucide-react';
+import { Activity, User, Mail, Lock, Ruler, Weight, ArrowRight, Phone, Calendar, ShieldAlert, CheckSquare, Square } from 'lucide-react';
 
 export const Register: React.FC = () => {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [profileData, setProfileData] = useState<UserProfile>(INITIAL_PROFILE);
+  const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export const Register: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (step < 3) { setStep(step + 1); return; }
+    if (!agreed) { setError('Lütfen kullanım şartlarını kabul edin.'); return; }
 
     setLoading(true);
     setError('');
@@ -26,7 +28,6 @@ export const Register: React.FC = () => {
     try {
       const heightInMeters = profileData.height / 100;
       const calculatedBMI = profileData.weight / (heightInMeters * heightInMeters);
-      // FIX: Calculate age upon registration for correct BMR analysis later
       const calculatedAge = new Date().getFullYear() - profileData.birthDate.year;
 
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -35,7 +36,6 @@ export const Register: React.FC = () => {
       await setDoc(doc(db, "users", user.uid), {
         ...profileData,
         bmi: Number(calculatedBMI.toFixed(2)),
-        // FIX: Storing calculated age
         age: calculatedAge,
       });
 
@@ -158,6 +158,15 @@ export const Register: React.FC = () => {
                         className="w-full p-3 bg-gray-50 border rounded-xl h-24 outline-none focus:ring-2 focus:ring-teal-500" 
                         placeholder="Örn: Astım, Diyabet (Virgülle ayırın)"
                       />
+                   </div>
+                   
+                   <div className="flex items-start gap-3 pt-2">
+                      <button type="button" onClick={() => setAgreed(!agreed)} className="mt-1">
+                         {agreed ? <CheckSquare className="text-teal-600" size={20}/> : <Square className="text-gray-300" size={20}/>}
+                      </button>
+                      <p className="text-[10px] text-gray-500 leading-tight">
+                         Sorumluluk Reddi: SağlıkAsist bir tıbbi tanı cihazı değildir. Verilen öneriler genel bilgilendirme amaçlıdır. <span className="font-bold text-teal-600 underline">Kullanım Şartları ve Gizlilik Politikası</span>'nı kabul ediyorum.
+                      </p>
                    </div>
                 </div>
               )}

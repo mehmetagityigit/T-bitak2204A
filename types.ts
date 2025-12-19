@@ -67,6 +67,15 @@ export interface PerformanceLog {
   aiFeedback?: string;
 }
 
+// FIX: Added missing ChatMessage interface for AIChat component
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'model';
+  text: string;
+  timestamp: number;
+  isOfflineResponse?: boolean;
+}
+
 export interface AppPreferences {
   theme: 'light' | 'dark';
   isAthleteMode: boolean;
